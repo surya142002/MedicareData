@@ -1,6 +1,7 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db.js');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
+// Define the Users table schema
 const User = sequelize.define('User', {
   id: {
     type: DataTypes.UUID,
@@ -29,8 +30,8 @@ const User = sequelize.define('User', {
     defaultValue: DataTypes.NOW,
   },
 }, {
-  tableName: 'Users',
-  timestamps: false,
+  tableName: 'Users', // Explicit table name
+  timestamps: false,  // Disable automatic timestamp columns
 });
 
-module.exports = User;
+export default User;
