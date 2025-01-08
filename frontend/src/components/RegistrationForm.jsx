@@ -31,7 +31,7 @@ const RegistrationForm = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:6969/register', formData);
+      const response = await axios.post('http://localhost:1212/register', formData);
       alert('Registration successful!');
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');

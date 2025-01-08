@@ -14,7 +14,7 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:6969/login', formData);
+      const response = await axios.post('http://localhost:1212/login', formData);
       localStorage.setItem('token', response.data.token);
       alert('Login successful!');
     } catch (err) {
