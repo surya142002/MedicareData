@@ -31,3 +31,12 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
+// Sample API route
+app.get('/api/datasets', (req, res) => {
+  const datasets = [
+      { id: 1, name: 'ICD-10-CM' },
+      { id: 2, name: 'HCPCS' },
+      { id: 3, name: 'RVU' },
+  ];
+  res.json(datasets);
+});
