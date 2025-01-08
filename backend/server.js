@@ -1,6 +1,7 @@
 console.log('Starting server...');
 import dotenv from 'dotenv';
 dotenv.config();
+import cors from 'cors';
 
 import express from 'express';
 import pkg from 'body-parser';
@@ -12,6 +13,7 @@ const app = express();
 // Middleware
 app.use(pkg.json()); // Parse JSON request bodies
 app.use('/api/auth', authRoutes); // Use authRoutes for /api/auth
+app.use(cors());
 
 
 // Start Server
