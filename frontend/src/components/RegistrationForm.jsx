@@ -12,16 +12,26 @@ const RegistrationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password, confirmPassword } = formData;
 
-    if (password !== confirmPassword) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Invalid email address');
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError('Password must be at least 8 characters and include letters and numbers');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:6969/register', { email, password });
-      console.log(response.data);
+      const response = await axios.post('http://localhost:6969/register', formData);
       alert('Registration successful!');
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
