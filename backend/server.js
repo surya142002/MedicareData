@@ -5,6 +5,9 @@ require('dotenv').config(); // Load .env file
 
 const app = express();
 
+// Middleware
+app.use(express.json());
+
 // Access environment variables
 const port = process.env.PORT || 6969;
 const dbUser = process.env.DB_USER;
