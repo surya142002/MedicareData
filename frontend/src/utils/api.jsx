@@ -1,9 +1,16 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5452/api', // Fallback URL
 });
 
-console.log('API Base URL:', import.meta.env.VITE_API_URL);
+// Intercept requests to add Authorization header if token exists
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export default api;

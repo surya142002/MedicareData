@@ -34,4 +34,4 @@ const User = sequelize.define('user', {
   timestamps: false,  // Disable automatic timestamp columns
 });
 
-export default User;
+export { User };

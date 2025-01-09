@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
-const LoginForm = () => {
+const LoginForm = ({ setIsLoggedIn }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,12 +16,15 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const response = await api.post('/auth/login', {
-        email: formData.email,
-        password: formData.password,
-      });
-      localStorage.setItem('token', response.data.token); // Save JWT for future requests
+      const response = await api.post('/auth/login', formData);
+      console.log('Login Response:', response.data);
+
+      // Store the JWT token and update login state
+      localStorage.setItem('token', response.data.token);
+      setIsLoggedIn(true);
+
       alert('Login successful!');
+      navigate('/datasets', { replace: true });
     } catch (err) {
       console.error('Login Error:', err);
       setError(err.response?.data?.message || 'Invalid credentials');
