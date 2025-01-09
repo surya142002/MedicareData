@@ -44,6 +44,11 @@ const DatasetsPage = () => {
       });
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   const handlePageChange = (newPage) => {
     if (selectedDataset) {
       fetchICD10CMData(selectedDataset, newPage);
@@ -51,24 +56,38 @@ const DatasetsPage = () => {
   };
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="container">{error}</div>;
   }
 
   return (
-    <div>
-      <h2>Available Datasets</h2>
-      <ul>
-        {datasets.map((dataset) => (
-          <li key={dataset.id}>
-            {dataset.name} (Records: {dataset.recordCount})
-            <button onClick={() => fetchICD10CMData(dataset.id)}>View Data</button>
-          </li>
-        ))}
-      </ul>
+    <div className="container">
+      {/* Logout Button - Top Right */}
+      <div className="logout-container">
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
 
+      {/* Page Title */}
+      <h2 className="page-title">Available Datasets</h2>
+
+      {/* Dataset Buttons */}
+      <div className="datasets-container">
+        {datasets.map((dataset) => (
+          <button
+            key={dataset.id}
+            className="dataset-button"
+            onClick={() => fetchICD10CMData(dataset.id)}
+          >
+            {dataset.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Data Table */}
       {selectedDataset && (
         <div>
-          <h3>ICD-10-CM Data</h3>
+          <h3 className="table-title">ICD-10-CM Data</h3>
           <table>
             <thead>
               <tr>
@@ -90,7 +109,8 @@ const DatasetsPage = () => {
             </tbody>
           </table>
 
-          <div>
+          {/* Pagination */}
+          <div className="pagination">
             <button
               onClick={() => handlePageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage === 1}

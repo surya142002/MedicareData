@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 
 const LoginForm = ({ setIsLoggedIn }) => {
@@ -32,27 +32,34 @@ const LoginForm = ({ setIsLoggedIn }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <label>Email:</label>
-      <input
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        required
-      />
-      <label>Password:</label>
-      <input
-        type="password"
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div className="form-container">
+      <form onSubmit={handleSubmit} className="form">
+        <h2 className="form-title">Login</h2>
+        {error && <p className="form-error">{error}</p>}
+        <label className="form-label">Email:</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="form-input"
+        />
+        <label className="form-label">Password:</label>
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+          className="form-input"
+        />
+        <button type="submit" className="form-button">Login</button>
+        <p className="form-link">
+          Don’t have an account? <Link to="/register" className="link">Register here</Link>.
+        </p>
+      </form>
+    </div>
   );
 };
 
