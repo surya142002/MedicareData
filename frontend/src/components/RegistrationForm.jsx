@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import api from '../utils/api';
 
 const RegistrationForm = () => {
-  const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,22 +14,22 @@ const RegistrationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Client-side validation for password match
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       return;
     }
 
     try {
-      const response = await axios.post("http://localhost:5454/api/auth/register", {
+      const response = await api.post('/auth/register', {
         email: formData.email,
         password: formData.password,
       });
       setMessage(response.data.message);
-      setError(""); // Clear any existing error
+      setError(''); // Clear any previous errors
     } catch (err) {
-      setMessage("");
-      setError(err.response?.data?.message || "An error occurred");
+      console.error('Registration Error:', err);
+      setMessage('');
+      setError(err.response?.data?.message || 'An error occurred');
     }
   };
 
@@ -61,8 +61,8 @@ const RegistrationForm = () => {
         required
       />
       <button type="submit">Register</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {message && <p style={{ color: "green" }}>{message}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {message && <p style={{ color: 'green' }}>{message}</p>}
     </form>
   );
 };

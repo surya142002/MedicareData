@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -14,10 +14,14 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:1212/login', formData);
-      localStorage.setItem('token', response.data.token);
+      const response = await api.post('/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+      localStorage.setItem('token', response.data.token); // Save JWT for future requests
       alert('Login successful!');
     } catch (err) {
+      console.error('Login Error:', err);
       setError(err.response?.data?.message || 'Invalid credentials');
     }
   };
@@ -27,9 +31,21 @@ const LoginForm = () => {
       <h2>Login</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <label>Email:</label>
-      <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+      />
       <label>Password:</label>
-      <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+      <input
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        required
+      />
       <button type="submit">Login</button>
     </form>
   );
