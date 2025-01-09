@@ -19,18 +19,6 @@ const App = () => {
 
   return (
     <Router>
-      <nav>
-        {!isLoggedIn ? (
-          <>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
-          </>
-        ) : (
-          <>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        )}
-      </nav>
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={!isLoggedIn ? <LoginForm setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/datasets" />} />
