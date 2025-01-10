@@ -14,19 +14,12 @@ const LoginForm = ({ setIsLoggedIn }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await api.post('/auth/login', formData);
-      console.log('Login Response:', response.data);
-
-      // Store the JWT token and update login state
       localStorage.setItem('token', response.data.token);
       setIsLoggedIn(true);
-
-      alert('Login successful!');
       navigate('/datasets', { replace: true });
     } catch (err) {
-      console.error('Login Error:', err);
       setError(err.response?.data?.message || 'Invalid credentials');
     }
   };
@@ -34,7 +27,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit} className="form">
-        <h2 className="form-title">Login</h2>
+        <h2 className="form-title">Log In</h2>
         {error && <p className="form-error">{error}</p>}
         <label className="form-label">Email:</label>
         <input
@@ -54,9 +47,9 @@ const LoginForm = ({ setIsLoggedIn }) => {
           required
           className="form-input"
         />
-        <button type="submit" className="form-button">Login</button>
+        <button type="submit" className="form-button">Log In</button>
         <p className="form-link">
-          Don’t have an account? <Link to="/register" className="link">Register here</Link>.
+          Don't have an account? <Link to="/register" className="link">Register here</Link>.
         </p>
       </form>
     </div>

@@ -1,9 +1,29 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import { register, login } from '../controllers/authController.js';
 
 const router = express.Router();
 
+// User registration route
 router.post('/register', register);
+
+// User login route
 router.post('/login', login);
 
-export default router; // Add this line for default export
+// Token validation route
+router.get('/validate', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1]; // Extract token
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.json({ valid: true, user: decoded });
+    } catch (error) {
+        console.error('Token validation failed:', error);
+        res.status(401).json({ message: 'Invalid token' });
+    }
+});
+
+export default router;

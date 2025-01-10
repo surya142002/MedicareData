@@ -13,8 +13,9 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(bodyParser.json());
+
 
 // Initialize models
 const models = initModels(sequelize);
@@ -31,7 +32,7 @@ sequelize.sync({ alter: true }) // Use { force: true } cautiously
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api', datasetRoutes);
+app.use('/api/datasets', datasetRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5452;
