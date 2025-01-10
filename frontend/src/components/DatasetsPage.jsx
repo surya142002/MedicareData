@@ -38,8 +38,8 @@ const DatasetsPage = ({ onLogout }) => {
       const response = await api.get(`/datasets/${datasetId}/entries`, { params: { page, limit: 10 } });
       setDatasetEntries(response.data.entries);
       setPagination({
-        currentPage: response.data.currentPage,
-        totalPages: response.data.totalPages,
+        currentPage: parseInt(response.data.currentPage, 10), // Ensure it is an integer
+        totalPages: parseInt(response.data.totalPages, 10), // Ensure it is an integer
       });
       setSelectedDataset(datasetId);
     } catch (err) {
