@@ -1,35 +1,39 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import { DataTypes, Model } from 'sequelize';
 
-const Dataset = sequelize.define('Dataset', {
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-    },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    description: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-    },
-    file_path: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    uploaded_by: {
-        type: DataTypes.UUID,
-        allowNull: false,
-    },
-    uploaded_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
-}, {
-    tableName: 'datasets', // Explicitly define the table name
-    timestamps: false,    // Disable automatic timestamp columns
-});
+class Datasets extends Model {
+    static initModel(sequelize) {
+        Datasets.init({
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                primaryKey: true,
+            },
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            description: {
+                type: DataTypes.TEXT,
+            },
+            file_path: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            uploaded_by: {
+                type: DataTypes.UUID,
+                allowNull: false,
+            },
+            uploaded_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+        }, {
+            sequelize, // Pass the Sequelize instance here
+            modelName: 'Datasets',
+            tableName: 'Datasets',
+            timestamps: false,
+        });
+    }
+}
 
-export { Dataset };
+export default Datasets;
