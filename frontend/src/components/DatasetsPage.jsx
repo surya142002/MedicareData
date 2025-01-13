@@ -13,6 +13,14 @@ const DatasetsPage = ({ onLogout }) => {
       try {
         const response = await api.get('/datasets');
         setDatasets(response.data);
+
+        // Automatically select ICD10 dataset if available
+        const icd10Dataset = response.data.find((dataset) =>
+          dataset.name.toLowerCase().includes('icd10')
+        );
+        if (icd10Dataset) {
+          setSelectedDataset(icd10Dataset);
+        }
       } catch (error) {
         console.error('Error fetching datasets:', error);
         if (error.response && error.response.status === 401) {
@@ -34,12 +42,13 @@ const DatasetsPage = ({ onLogout }) => {
   };
 
   return (
-    <div>
+    <div className="datasets-page">
+      <button className="logout-button" onClick={handleLogout}>
+        Logout
+      </button>
+
       <div className="header">
-        <h1>Available Datasets</h1>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
+        <h1 className="header-title">Available Datasets</h1>
       </div>
 
       <div className="datasets-list">

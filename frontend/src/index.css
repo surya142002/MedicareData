@@ -1,67 +1,108 @@
-/* Header */
-.header {
+/* General Page Styling */
+.datasets-page {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  justify-content: flex-start;
+  min-height: 100vh;
+  background-color: #f7f7f7;
+  padding: 20px;
+  position: relative; /* Allows absolute positioning of the logout button */
 }
 
+/* Logout Button */
 .logout-button {
-  padding: 10px 15px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
+  font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .logout-button:hover {
   background-color: #0056b3;
 }
 
+/* Header */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%; /* Ensures the header spans the full width of the page */
+}
+
+.header-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
 /* Datasets List */
 .datasets-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px;
+  justify-content: center;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 30px;
 }
 
 .dataset-button {
-  padding: 10px;
+  padding: 15px 20px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, background-color 0.3s;
 }
 
 .dataset-button:hover {
   background-color: #0056b3;
+  transform: translateY(-3px);
 }
 
-/* Dataset Table */
+/* Dataset Table Styling */
 .dataset-table-container {
-  margin-top: 30px;
-  padding: 20px;
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #f9f9f9;
+  padding: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .dataset-container {
-  margin-top: 20px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.dataset-container h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
 }
 
 .search-bar {
-  margin-bottom: 10px;
-  padding: 8px;
+  padding: 10px;
   width: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 14px;
 }
 
 .dataset-table {
@@ -73,7 +114,7 @@
 .dataset-table th,
 .dataset-table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 10px;
   text-align: left;
 }
 
@@ -91,6 +132,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .pagination button:hover {
@@ -102,93 +144,124 @@
   cursor: not-allowed;
 }
 
-/* General Styles */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
+
+
+
+
+
+
+
+/* General Styling for Auth Pages */
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   background-color: #f7f7f7;
-}
-
-/* Container for Forms */
-.form-container {
-  max-width: 400px;
-  margin: 50px auto;
   padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Form */
-.form {
+/* Form Container */
+.auth-form-container {
+  width: 100%;
+  max-width: 400px;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Title */
+.auth-form-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Form Styling */
+.auth-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.form-title {
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
-  color: #333;
-}
-
-/* Form Labels */
-.form-label {
+/* Labels */
+.auth-form-label {
   font-size: 14px;
   font-weight: 600;
   color: #555;
 }
 
 /* Input Fields */
-.form-input {
+.auth-form-input {
   padding: 10px;
   font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 5px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-input:focus {
-  outline: none;
+.auth-form-input:focus {
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  outline: none;
 }
 
-/* Submit Buttons */
-.form-button {
+/* Submit Button */
+.auth-form-button {
   padding: 10px;
+  font-size: 16px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-.form-button:hover {
+.auth-form-button:hover {
   background-color: #0056b3;
+  transform: translateY(-2px);
 }
 
 /* Links */
-.form-link {
+.auth-form-link {
   font-size: 14px;
   text-align: center;
 }
 
-.form-link a {
+.auth-form-link a {
   color: #007bff;
   text-decoration: none;
 }
 
-.form-link a:hover {
+.auth-form-link a:hover {
   text-decoration: underline;
 }
 
 /* Error Message */
-.form-error {
+.auth-form-error {
   color: red;
   font-size: 14px;
   text-align: center;
+  margin-bottom: -10px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .auth-form-container {
+    padding: 20px;
+  }
+
+  .auth-form-title {
+    font-size: 1.5rem;
+  }
+
+  .auth-form-button {
+    font-size: 14px;
+    padding: 8px;
+  }
 }
