@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import api from '../utils/api.jsx';
+import api from '../utils/api';
 
 const DatasetTable = ({ datasetId, datasetName }) => {
   const [entries, setEntries] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
 
+  // Fetch dataset entries from the backend
   const fetchEntries = async (page = 1, search = '') => {
     try {
       const response = await api.get(`/datasets/${datasetId}/entries`, {
-        params: { page, limit: 10, searchTerm: search }, // Limit to 10 entries per page
+        params: { page, limit: 10, searchTerm: search },
       });
       setEntries(response.data.entries);
       setPagination({
@@ -21,14 +22,16 @@ const DatasetTable = ({ datasetId, datasetName }) => {
     }
   };
 
+  // Reset search bar and fetch entries when datasetId changes
   useEffect(() => {
-    fetchEntries(); // Fetch entries on component mount
+    setSearchTerm(''); // Reset the search term
+    fetchEntries(); // Fetch entries for the new dataset
   }, [datasetId]);
 
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
-    fetchEntries(1, value); // Search and reset to page 1
+    fetchEntries(1, value); // Reset to the first page with the search term
   };
 
   const handlePageChange = (newPage) => {
