@@ -1,6 +1,8 @@
 import Datasets from '../models/dataset.js';
 import DatasetEntries from '../models/datasetEntries.js';
+import { Op } from 'sequelize';
 
+// Upload a new dataset
 export const uploadDataset = async (req, res) => {
     try {
         const { name, description, rows } = req.body;
@@ -31,36 +33,41 @@ export const uploadDataset = async (req, res) => {
     }
 };
 
+// Fetch dataset entries with search and pagination
 export const getDatasetEntries = async (req, res) => {
     try {
         const { datasetId } = req.params;
-        const { searchTerm, page = 1, limit = 20 } = req.query;
+        const { searchTerm = '', page = 1, limit = 20 } = req.query;
         const offset = (page - 1) * limit;
 
-        const whereCondition = { dataset_id: datasetId };
+        console.log(`Fetching dataset entries for dataset: ${datasetId}, page: ${page}, searchTerm: "${searchTerm}"`);
 
-        if (searchTerm) {
-            whereCondition.data = {
-                $contains: {
-                    description: { $iLike: `%${searchTerm}%` },
+        // Build the where condition dynamically
+        const whereCondition = {
+            dataset_id: datasetId,
+            ...(searchTerm && {
+                data: {
+                    [Op.or]: [
+                        { code: { [Op.iLike]: `${searchTerm}%` } }, // Code starts with searchTerm
+                        { description: { [Op.iLike]: `%${searchTerm}%` } }, // Description contains searchTerm
+                    ],
                 },
-            };
-        }
-
-        console.log('Fetching dataset entries for:', datasetId);
+            }),
+        };
 
         const entries = await DatasetEntries.findAndCountAll({
             where: whereCondition,
-            limit: parseInt(limit),
+            limit: parseInt(limit, 10),
             offset,
+            order: [['created_at', 'DESC']], // Optional: order entries by creation date
         });
 
-        console.log('Dataset entries fetched successfully:', entries);
+        console.log(`Found ${entries.count} entries for dataset: ${datasetId}`);
 
         res.status(200).json({
             entries: entries.rows,
             count: entries.count,
-            currentPage: page,
+            currentPage: parseInt(page, 10),
             totalPages: Math.ceil(entries.count / limit),
         });
     } catch (error) {

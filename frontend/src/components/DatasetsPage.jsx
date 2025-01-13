@@ -1,88 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import DatasetTable from './DatasetsTable';
 
 const DatasetsPage = ({ onLogout }) => {
-  const [datasets, setDatasets] = useState([]); // Store datasets
+  const [datasets, setDatasets] = useState([]);
   const [selectedDataset, setSelectedDataset] = useState(null);
-  const [datasetEntries, setDatasetEntries] = useState([]);
-  const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDatasets = async () => {
       try {
-        const response = await api.get('/datasets'); // Correct API endpoint
-        setDatasets(response.data); // Store resolved data in state
-      } catch (err) {
-        console.error('Error fetching datasets:', err.response?.data || err.message);
-        if (err.response?.status === 401) {
-          onLogout(); // Redirect to login if unauthorized
-        } else {
-          setError('Failed to fetch datasets. Please try again.');
+        const response = await api.get('/datasets');
+        setDatasets(response.data);
+      } catch (error) {
+        console.error('Error fetching datasets:', error);
+        if (error.response && error.response.status === 401) {
+          onLogout(); // Log out if unauthorized
         }
       }
     };
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      onLogout(); // Redirect to login if no token
-    } else {
-      fetchDatasets();
-    }
-  }, [navigate, onLogout]);
+    fetchDatasets();
+  }, [onLogout]);
 
-  const fetchDatasetEntries = async (datasetId, page = 1) => {
-    try {
-      const response = await api.get(`/datasets/${datasetId}/entries`, { params: { page, limit: 10 } });
-      setDatasetEntries(response.data.entries);
-      setPagination({
-        currentPage: parseInt(response.data.currentPage, 10), // Ensure it is an integer
-        totalPages: parseInt(response.data.totalPages, 10), // Ensure it is an integer
-      });
-      setSelectedDataset(datasetId);
-    } catch (err) {
-      console.error('Error fetching dataset entries:', err.response?.data || err.message);
-      setError('Failed to fetch dataset entries. Please try again.');
-    }
+  const handleDatasetClick = (dataset) => {
+    setSelectedDataset(dataset);
   };
 
-  const handlePageChange = (newPage) => {
-    if (selectedDataset) {
-      fetchDatasetEntries(selectedDataset, newPage);
-    }
+  const handleLogout = () => {
+    onLogout(); // Trigger logout callback
+    navigate('/login', { replace: true }); // Ensure immediate redirection
   };
-
-  if (error) {
-    return <div className="container">{error}</div>;
-  }
 
   return (
-    <div className="container">
-      <div className="logout-container">
-        <button
-          className="logout-button"
-          onClick={() => {
-            localStorage.removeItem('token'); // Clear token
-            navigate('/login'); // Redirect to login
-            if (onLogout) {
-              onLogout(); // Notify parent component
-            }
-          }}
-        >
+    <div>
+      <div className="header">
+        <h1>Available Datasets</h1>
+        <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
       </div>
 
-      <h2 className="page-title">Available Datasets</h2>
-
-      <div className="datasets-container">
+      <div className="datasets-list">
         {datasets.map((dataset) => (
           <button
             key={dataset.id}
             className="dataset-button"
-            onClick={() => fetchDatasetEntries(dataset.id)}
+            onClick={() => handleDatasetClick(dataset)}
           >
             {dataset.name}
           </button>
@@ -90,42 +55,8 @@ const DatasetsPage = ({ onLogout }) => {
       </div>
 
       {selectedDataset && (
-        <div>
-          <h3 className="table-title">Dataset Entries</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {datasetEntries.map((entry) => (
-                <tr key={entry.id}>
-                  <td>{entry.data.code}</td>
-                  <td>{entry.data.description}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="pagination">
-            <button
-              onClick={() => handlePageChange(pagination.currentPage - 1)}
-              disabled={pagination.currentPage === 1}
-            >
-              Previous
-            </button>
-            <span>
-              Page {pagination.currentPage} of {pagination.totalPages}
-            </span>
-            <button
-              onClick={() => handlePageChange(pagination.currentPage + 1)}
-              disabled={pagination.currentPage === pagination.totalPages}
-            >
-              Next
-            </button>
-          </div>
+        <div className="dataset-table-container">
+          <DatasetTable datasetId={selectedDataset.id} datasetName={selectedDataset.name} />
         </div>
       )}
     </div>

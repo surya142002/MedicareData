@@ -1,72 +1,96 @@
-/* Logout Button */
-.logout-container {
+/* Header */
+.header {
   display: flex;
-  justify-content: flex-end;
-  padding: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .logout-button {
-  padding: 8px 15px;
+  padding: 10px 15px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
 }
 
 .logout-button:hover {
   background-color: #0056b3;
 }
 
-/* Dataset Buttons */
-.datasets-container {
+/* Datasets List */
+.datasets-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .dataset-button {
-  padding: 10px 20px;
+  padding: 10px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
 }
 
 .dataset-button:hover {
   background-color: #0056b3;
 }
 
-/* General Page Title */
-.page-title {
-  text-align: center;
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 20px;
+/* Dataset Table */
+.dataset-table-container {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
-/* Pagination */
+.dataset-container {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.search-bar {
+  margin-bottom: 10px;
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.dataset-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.dataset-table th,
+.dataset-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
 .pagination {
   display: flex;
-  justify-content: center; /* Center aligns the pagination controls horizontally */
-  align-items: center;
-  margin-top: 20px;
-  gap: 10px; /* Adds spacing between buttons and the page number text */
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .pagination button {
-  padding: 10px 20px;
+  padding: 10px;
+  margin: 0 5px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
 }
 
 .pagination button:hover {
@@ -78,17 +102,20 @@
   cursor: not-allowed;
 }
 
-.pagination span {
-  font-size: 14px;
-  color: #333;
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f7f7f7;
 }
 
-/* Form Container */
+/* Container for Forms */
 .form-container {
   max-width: 400px;
   margin: 50px auto;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -100,7 +127,6 @@
   gap: 15px;
 }
 
-/* Form Title */
 .form-title {
   font-size: 24px;
   font-weight: bold;
@@ -115,7 +141,7 @@
   color: #555;
 }
 
-/* Form Inputs */
+/* Input Fields */
 .form-input {
   padding: 10px;
   font-size: 14px;
@@ -123,7 +149,13 @@
   border-radius: 4px;
 }
 
-/* Form Buttons */
+.form-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Submit Buttons */
 .form-button {
   padding: 10px;
   background-color: #007bff;
@@ -132,10 +164,26 @@
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .form-button:hover {
   background-color: #0056b3;
+}
+
+/* Links */
+.form-link {
+  font-size: 14px;
+  text-align: center;
+}
+
+.form-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.form-link a:hover {
+  text-decoration: underline;
 }
 
 /* Error Message */

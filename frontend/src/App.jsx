@@ -33,29 +33,36 @@ const App = () => {
     validateToken();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
+
   if (loading) {
-    return <div>Loading...</div>; // Show loading state while validating token
+    return <div>Loading...</div>; // Show loading indicator while validating token
   }
 
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={<Navigate to="/login" />}
-        />
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route
           path="/login"
           element={
             !isLoggedIn ? <LoginForm setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/datasets" />
           }
         />
-        <Route path="/register" element={<RegistrationForm />} />
+        <Route
+          path="/register"
+          element={
+            !isLoggedIn ? <RegistrationForm /> : <Navigate to="/datasets" />
+          }
+        />
         <Route
           path="/datasets"
           element={
             isLoggedIn ? (
-              <DatasetsPage onLogout={() => setIsLoggedIn(false)} />
+              <DatasetsPage onLogout={handleLogout} />
             ) : (
               <Navigate to="/login" />
             )
