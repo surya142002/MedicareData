@@ -27,7 +27,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit} className="form">
-        <h2 className="form-title">Log In</h2>
+        <h2 className="form-title">Login</h2>
         {error && <p className="form-error">{error}</p>}
         <label className="form-label">Email:</label>
         <input
@@ -47,7 +47,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
           required
           className="form-input"
         />
-        <button type="submit" className="form-button">Log In</button>
+        <button type="submit" className="form-button">Login</button>
         <p className="form-link">
           Don't have an account? <Link to="/register" className="link">Register here</Link>.
         </p>
