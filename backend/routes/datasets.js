@@ -1,12 +1,13 @@
 import express from 'express';
 import { uploadDataset, getDatasetEntries, deleteDataset } from '../controllers/datasetController.js';
 import Datasets from '../models/dataset.js';
+import { upload } from '../middleware/fileUpload.js';
 import { verifyToken } from '../middleware/authMiddleware.js'; // Import verifyToken middleware
 
 const router = express.Router();
 
 // Upload a new dataset
-router.post('/upload', verifyToken, uploadDataset);
+router.post('/upload', verifyToken, upload.single('file'), uploadDataset);
 
 // Delete a dataset by ID
 router.delete('/:datasetId', verifyToken, deleteDataset);

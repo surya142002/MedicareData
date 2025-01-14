@@ -1,14 +1,25 @@
+import { standardizeAndFilter } from '../utils/dataCleaner.js';
+import path from 'path';
+import fs from 'fs';
 import Datasets from '../models/dataset.js';
 import DatasetEntries from '../models/datasetEntries.js';
+import { parseDataset } from '../utils/datasetParser.js'; // Import your parsing utility
 import { Op } from 'sequelize';
 
 // Upload a new dataset
 export const uploadDataset = async (req, res) => {
     try {
-        const { name, description, datasetType, rows } = req.body;
+        const { name, description, datasetType } = req.body;
 
-        console.log('Uploading dataset:', name);
-        // Create a new dataset
+        if (!req.file) {
+            return res.status(400).json({ message: 'File is required.' });
+        }
+
+        const inputFile = req.file.path;
+        const cleanedFile = `${inputFile}_cleaned.txt`;
+
+        // Clean and standardize the dataset
+        await standardizeAndFilter(inputFile, cleanedFile);
 
         const dataset = await Datasets.create({
             name,
@@ -17,18 +28,36 @@ export const uploadDataset = async (req, res) => {
             uploaded_by: req.user.id,
         });
 
-        console.log('Dataset created:', dataset);
+        // Parse the cleaned file and insert data
+        const fileContent = fs.readFileSync(cleanedFile, 'utf-8');
+        const rows = fileContent.split('\n').map(line => line.split('\t'));
+        const parsedRows = parseDataset(datasetType, rows);
 
-        // Insert rows dynamically
-        const entries = rows.map(row => ({
-            dataset_id: dataset.id,
-            data: row, // Dynamic row structure as JSON
-        }));
+        const failedEntries = [];
+        for (const row of parsedRows) {
+            try {
+                await DatasetEntries.create({
+                    dataset_id: dataset.id,
+                    data: row,
+                });
+            } catch (error) {
+                failedEntries.push({ row, error: error.message });
+            }
+        }
 
-        await DatasetEntries.bulkCreate(entries);
+        // Log failed entries
+        if (failedEntries.length > 0) {
+            console.error(`Failed to insert ${failedEntries.length} entries:`);
+            failedEntries.forEach(failed =>
+                console.error(`Entry: ${JSON.stringify(failed.row)}, Error: ${failed.error}`)
+            );
+        } else {
+            console.log(`All ${parsedRows.length} entries successfully inserted.`);
+        }
 
         res.status(201).json({ message: 'Dataset uploaded successfully', dataset });
     } catch (error) {
+        console.error('Error uploading dataset:', error);
         res.status(500).json({ message: 'Failed to upload dataset', error: error.message });
     }
 };

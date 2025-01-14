@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const UploadDatasetPage = () => {
-    const [formData, setFormData] = useState({ name: '', description: '', datasetType: '', rows: [] });
+    const [formData, setFormData] = useState({ name: '', description: '', datasetType: '', file: null });
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
@@ -14,20 +14,21 @@ const UploadDatasetPage = () => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = () => {
-            const rows = JSON.parse(reader.result);
-            setFormData({ ...formData, rows });
-        };
-
-        reader.readAsText(file);
+        setFormData({ ...formData, file }); // Store the file directly
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.post('/datasets/upload', formData);
+            const uploadData = new FormData(); // Use FormData to handle file uploads
+            uploadData.append('name', formData.name);
+            uploadData.append('description', formData.description);
+            uploadData.append('datasetType', formData.datasetType);
+            uploadData.append('file', formData.file); // Append the file
+
+            const response = await api.post('/datasets/upload', uploadData, {
+                headers: { 'Content-Type': 'multipart/form-data' }, // Ensure proper headers
+            });
             setMessage(response.data.message);
         } catch (error) {
             setMessage(error.response?.data?.message || 'Failed to upload dataset');
@@ -55,17 +56,24 @@ const UploadDatasetPage = () => {
                     className="auth-form-input"
                 />
                 <label className="auth-form-label">Dataset Type:</label>
-                <input
-                    type="text"
+                <select
                     name="datasetType"
                     onChange={handleChange}
                     required
                     className="auth-form-input"
-                />
+                >
+                    <option value="">Select Type</option>
+                    <option value="ICD-10-CM">ICD-10-CM</option>
+                    <option value="HCPCS">HCPCS</option>
+                    <option value="RVU">RVU</option>
+                    <option value="FeeSchedules">Fee Schedules</option>
+                    <option value="MUE Edits">MUE Edits</option>
+                    <option value="LMRP">Current LMRP</option>
+                </select>
                 <label className="auth-form-label">Upload File:</label>
                 <input
                     type="file"
-                    accept=".json"
+                    accept=".txt"
                     onChange={handleFileChange}
                     required
                     className="auth-form-input"
