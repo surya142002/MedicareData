@@ -14,7 +14,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  width: 100%; /* Ensure buttons align on the same row */
+  width: 100%;
   margin-bottom: 20px;
 }
 
@@ -37,7 +37,7 @@
 
 /* Logout Button */
 .logout-button {
-  margin-left: auto; /* Align to the far right of the header */
+  margin-left: auto;
 }
 
 /* Header */
@@ -46,7 +46,7 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
-  width: 100%; /* Ensures the header spans the full width of the page */
+  width: 100%;
 }
 
 .header-title {
@@ -93,12 +93,6 @@
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.dataset-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 }
 
 .dataset-container h2 {
@@ -167,7 +161,6 @@
   padding: 20px;
 }
 
-/* Form Container */
 .auth-form-container {
   width: 100%;
   max-width: 400px;
@@ -175,13 +168,21 @@
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center all text inside the form */
 }
 
-/* Form Styling */
 .auth-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  align-items: center; /* Center the form elements */
+}
+
+.auth-form-label {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  text-align: center; /* Center the labels */
 }
 
 .auth-form-input {
@@ -189,6 +190,8 @@
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  width: 100%;
+  max-width: 300px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -213,23 +216,6 @@
   background-color: #0056b3;
   transform: translateY(-2px);
 }
-
-/* Responsive Adjustments */
-@media (max-width: 480px) {
-  .auth-form-container {
-    padding: 20px;
-  }
-
-  .auth-form-title {
-    font-size: 1.5rem;
-  }
-
-  .auth-form-button {
-    font-size: 14px;
-    padding: 8px;
-  }
-}
-
 
 /* Back Button */
 .back-button {
@@ -267,9 +253,50 @@
   margin-bottom: 20px;
 }
 
-/* Datasets List */
+/* Upload Page Container */
+.upload-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Loading Message */
+.loading-message {
+  color: #007bff;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* Custom File Input */
+.custom-file-input {
+  display: none;
+}
+
+.file-input-label {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.file-input-label:hover {
+  background-color: #0056b3;
+}
+
+
+/* Datasets List for Delete Dataset Page */
 .datasets-list {
-  list-style-type: none;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -283,9 +310,24 @@
   align-items: center;
   width: 100%;
   max-width: 500px;
-  padding: 10px;
-  background-color: #f7f7f7;
+  padding: 15px;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dataset-item button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dataset-item button:hover {
+  background-color: #d93636;
 }
