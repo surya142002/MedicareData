@@ -10,23 +10,24 @@ const DatasetsPage = ({ onLogout }) => {
 
   useEffect(() => {
     const fetchDatasets = async () => {
-      try {
-        const response = await api.get('/datasets');
-        setDatasets(response.data);
+        try {
+            const response = await api.get('/datasets');
+            console.log('Fetched datasets:', response.data); // Debugging
+            setDatasets(response.data);
 
-        // Automatically select ICD10 dataset if available
-        const icd10Dataset = response.data.find((dataset) =>
-          dataset.name.toLowerCase().includes('icd10')
-        );
-        if (icd10Dataset) {
-          setSelectedDataset(icd10Dataset);
+            // Automatically select ICD10 dataset if available
+            const icd10Dataset = response.data.find((dataset) =>
+                dataset.name.toLowerCase().includes('icd10')
+            );
+            if (icd10Dataset) {
+                setSelectedDataset(icd10Dataset);
+            }
+        } catch (error) {
+            console.error('Error fetching datasets:', error);
+            if (error.response && error.response.status === 401) {
+                onLogout(); // Log out if unauthorized
+            }
         }
-      } catch (error) {
-        console.error('Error fetching datasets:', error);
-        if (error.response && error.response.status === 401) {
-          onLogout(); // Log out if unauthorized
-        }
-      }
     };
 
     fetchDatasets();
@@ -43,25 +44,38 @@ const DatasetsPage = ({ onLogout }) => {
 
   return (
     <div className="datasets-page">
-      <button className="logout-button" onClick={handleLogout}>
-        Logout
-      </button>
+      <div className="header-buttons">
+        <button className="admin-button" onClick={() => navigate('/upload')}>
+          Upload Dataset
+        </button>
+        <button className="admin-button" onClick={() => navigate('/delete')}>
+          Delete Dataset
+        </button>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
 
       <div className="header">
         <h1 className="header-title">Available Datasets</h1>
       </div>
 
       <div className="datasets-list">
-        {datasets.map((dataset) => (
-          <button
-            key={dataset.id}
-            className="dataset-button"
-            onClick={() => handleDatasetClick(dataset)}
-          >
-            {dataset.name}
-          </button>
-        ))}
+        {datasets.length > 0 ? (
+          datasets.map((dataset) => (
+            <button
+                key={dataset.id}
+                className="dataset-button"
+                onClick={() => handleDatasetClick(dataset)}
+            >
+                {dataset.name}
+            </button>
+          ))
+        ) : (
+          <p>No datasets available.</p>
+        )}
       </div>
+  
 
       {selectedDataset && (
         <div className="dataset-table-container">

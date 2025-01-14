@@ -5,16 +5,16 @@ import { Op } from 'sequelize';
 // Upload a new dataset
 export const uploadDataset = async (req, res) => {
     try {
-        const { name, description, rows } = req.body;
+        const { name, description, datasetType, rows } = req.body;
 
         console.log('Uploading dataset:', name);
-
         // Create a new dataset
+
         const dataset = await Datasets.create({
             name,
             description,
-            file_path: req.file ? req.file.path : null,
-            uploaded_by: req.user.id, // Ensure req.user.id is populated
+            type: datasetType,
+            uploaded_by: req.user.id,
         });
 
         console.log('Dataset created:', dataset);
@@ -22,16 +22,30 @@ export const uploadDataset = async (req, res) => {
         // Insert rows dynamically
         const entries = rows.map(row => ({
             dataset_id: dataset.id,
-            data: row, // Convert each row to JSON
+            data: row, // Dynamic row structure as JSON
         }));
+
         await DatasetEntries.bulkCreate(entries);
 
         res.status(201).json({ message: 'Dataset uploaded successfully', dataset });
     } catch (error) {
-        console.error('Error uploading dataset:', error);
-        res.status(500).json({ message: 'Failed to upload dataset' });
+        res.status(500).json({ message: 'Failed to upload dataset', error: error.message });
     }
 };
+
+
+// delete a dataset by ID
+export const deleteDataset = async (req, res) => {
+    try {
+        const { datasetId } = req.params;
+        await Datasets.destroy({ where: { id: datasetId } });
+        res.status(200).json({ message: 'Dataset deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete dataset', error: error.message });
+    }
+};
+
+
 
 // Fetch dataset entries with search and pagination
 export const getDatasetEntries = async (req, res) => {

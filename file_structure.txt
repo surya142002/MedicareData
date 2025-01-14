@@ -1,0 +1,54 @@
+.
+├── LICENSE
+├── README.md
+├── backend
+│   ├── config
+│   │   └── db.js
+│   ├── controllers
+│   │   ├── authController.js
+│   │   └── datasetController.js
+│   ├── middleware
+│   │   └── authMiddleware.js
+│   ├── models
+│   │   ├── dataset.js
+│   │   ├── datasetEntries.js
+│   │   ├── index.js
+│   │   ├── initModels.js
+│   │   └── user.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── routes
+│   │   ├── authRoutes.js
+│   │   └── datasets.js
+│   └── server.js
+├── file_conversion
+│   ├── HCPCS_codes_2025.txt
+│   ├── HCPCS_codes_2025_standardized.txt
+│   ├── icd10cm_codes_2025.txt
+│   ├── icd10cm_codes_2025_standardized.txt
+│   ├── insert_datasets.py
+│   └── spacing.py
+├── file_structure.txt
+└── frontend
+    ├── README.md
+    ├── eslint.config.js
+    ├── index.html
+    ├── package-lock.json
+    ├── package.json
+    ├── public
+    │   └── vite.svg
+    ├── src
+    │   ├── App.jsx
+    │   ├── assets
+    │   │   └── react.svg
+    │   ├── components
+    │   │   ├── DatasetsPage.jsx
+    │   │   ├── DatasetsTable.jsx
+    │   │   ├── LoginForm.jsx
+    │   │   └── RegistrationForm.jsx
+    │   ├── index.css
+    │   ├── main.jsx
+    │   ├── styles
+    │   └── utils
+    │       └── api.jsx
+    └── vite.config.js
