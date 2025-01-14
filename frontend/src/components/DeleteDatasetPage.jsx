@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const DeleteDatasetPage = () => {
     const [datasets, setDatasets] = useState([]);
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchDatasets = async () => {
@@ -19,6 +21,9 @@ const DeleteDatasetPage = () => {
     }, []);
 
     const handleDelete = async (datasetId) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this dataset?');
+        if (!confirmDelete) return;
+
         try {
             const response = await api.delete(`/datasets/${datasetId}`);
             setMessage(response.data.message);
@@ -30,13 +35,19 @@ const DeleteDatasetPage = () => {
 
     return (
         <div className="delete-page">
-            <h1>Delete Dataset</h1>
-            {message && <p>{message}</p>}
-            <ul>
+            <button className="back-button" onClick={() => navigate('/datasets')}>Back</button>
+            <h1 className="page-title">Delete Dataset</h1>
+            {message && <p className="status-message">{message}</p>}
+            <ul className="datasets-list">
                 {datasets.map(dataset => (
-                    <li key={dataset.id}>
+                    <li key={dataset.id} className="dataset-item">
                         {dataset.name}
-                        <button onClick={() => handleDelete(dataset.id)}>Delete</button>
+                        <button
+                            className="auth-form-button"
+                            onClick={() => handleDelete(dataset.id)}
+                        >
+                            Delete
+                        </button>
                     </li>
                 ))}
             </ul>
