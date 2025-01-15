@@ -3,8 +3,21 @@ import path from 'path';
 import fs from 'fs';
 import Datasets from '../models/dataset.js';
 import DatasetEntries from '../models/datasetEntries.js';
+import DatasetUsage from '../models/datasetUsage.js';
 import { parseDataset } from '../utils/datasetParser.js'; // Import your parsing utility
 import { Op } from 'sequelize';
+
+export const logDatasetUsage = async (datasetId, actionType, searchTerm = null) => {
+    try {
+        await DatasetUsage.create({
+            dataset_id: datasetId,
+            action_type: actionType,
+            search_term: searchTerm,
+        });
+    } catch (error) {
+        console.error('Error logging dataset usage:', error.message);
+    }
+};
 
 // Upload a new dataset
 export const uploadDataset = async (req, res) => {
@@ -18,7 +31,6 @@ export const uploadDataset = async (req, res) => {
         const inputFile = req.file.path;
         const cleanedFile = `${inputFile}_cleaned.txt`;
 
-        // Clean and standardize the dataset
         await standardizeAndFilter(inputFile, cleanedFile);
 
         const dataset = await Datasets.create({
@@ -28,7 +40,8 @@ export const uploadDataset = async (req, res) => {
             uploaded_by: req.user.id,
         });
 
-        // Parse the cleaned file and insert data
+        await logDatasetUsage(dataset.id, 'upload');
+
         const fileContent = fs.readFileSync(cleanedFile, 'utf-8');
         const rows = fileContent.split('\n').map(line => line.split('\t'));
         const parsedRows = parseDataset(datasetType, rows);
@@ -45,14 +58,11 @@ export const uploadDataset = async (req, res) => {
             }
         }
 
-        // Log failed entries
         if (failedEntries.length > 0) {
             console.error(`Failed to insert ${failedEntries.length} entries:`);
             failedEntries.forEach(failed =>
                 console.error(`Entry: ${JSON.stringify(failed.row)}, Error: ${failed.error}`)
             );
-        } else {
-            console.log(`All ${parsedRows.length} entries successfully inserted.`);
         }
 
         res.status(201).json({ message: 'Dataset uploaded successfully', dataset });
@@ -61,6 +71,7 @@ export const uploadDataset = async (req, res) => {
         res.status(500).json({ message: 'Failed to upload dataset', error: error.message });
     }
 };
+
 
 
 // delete a dataset by ID
@@ -85,14 +96,17 @@ export const getDatasetEntries = async (req, res) => {
 
         console.log(`Fetching dataset entries for dataset: ${datasetId}, page: ${page}, searchTerm: "${searchTerm}"`);
 
+        // Log the search action
+        await logDatasetUsage(datasetId, 'search', searchTerm);
+
         // Build the where condition dynamically
         const whereCondition = {
             dataset_id: datasetId,
             ...(searchTerm && {
                 data: {
                     [Op.or]: [
-                        { code: { [Op.iLike]: `${searchTerm}%` } }, // Code starts with searchTerm
-                        { description: { [Op.iLike]: `%${searchTerm}%` } }, // Description contains searchTerm
+                        { code: { [Op.iLike]: `${searchTerm}%` } },
+                        { description: { [Op.iLike]: `%${searchTerm}%` } },
                     ],
                 },
             }),
@@ -102,7 +116,7 @@ export const getDatasetEntries = async (req, res) => {
             where: whereCondition,
             limit: parseInt(limit, 10),
             offset,
-            order: [['created_at', 'DESC']], // Optional: order entries by creation date
+            order: [['created_at', 'DESC']],
         });
 
         console.log(`Found ${entries.count} entries for dataset: ${datasetId}`);
@@ -115,6 +129,7 @@ export const getDatasetEntries = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching dataset entries:', error);
-        res.status(500).json({ message: 'Failed to fetch dataset entries' });
+        res.status(500).json({ message: 'Failed to fetch dataset entries', error: error.message });
     }
 };
+

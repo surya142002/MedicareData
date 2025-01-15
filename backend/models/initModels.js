@@ -1,12 +1,16 @@
 import User from './user.js';
 import Datasets from './dataset.js';
 import DatasetEntries from './datasetEntries.js';
+import DatasetUsage from './datasetUsage.js';
+import UserActivity from './userActivity.js';
 
 export default function initModels(sequelize) {
     // Initialize models
     User.initModel(sequelize);
     Datasets.initModel(sequelize);
     DatasetEntries.initModel(sequelize);
+    DatasetUsage.initModel(sequelize);
+    UserActivity.initModel(sequelize);
 
     // Define relationships
     Datasets.belongsTo(User, { foreignKey: 'uploaded_by', as: 'uploader' });
@@ -14,5 +18,11 @@ export default function initModels(sequelize) {
     Datasets.hasMany(DatasetEntries, { foreignKey: 'dataset_id', onDelete: 'CASCADE' });
     DatasetEntries.belongsTo(Datasets, { foreignKey: 'dataset_id' });
 
-    return { User, Datasets, DatasetEntries };
+    DatasetUsage.belongsTo(Datasets, { foreignKey: 'dataset_id', as: 'dataset' });
+    Datasets.hasMany(DatasetUsage, { foreignKey: 'dataset_id', onDelete: 'CASCADE' });
+
+    UserActivity.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+    User.hasMany(UserActivity, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+
+    return { User, Datasets, DatasetEntries, DatasetUsage, UserActivity };
 }

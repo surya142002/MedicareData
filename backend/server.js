@@ -6,6 +6,7 @@ import sequelize from './config/db.js'; // Correct Sequelize instance
 import initModels from './models/initModels.js'; // Model initialization
 import authRoutes from './routes/authRoutes.js';
 import datasetRoutes from './routes/datasets.js';
+import analyticsRoutes from './routes/analytics.js'; // Import analytics routes
 
 // Load environment variables
 dotenv.config();
@@ -15,7 +16,6 @@ const app = express();
 // Middleware
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(bodyParser.json());
-
 
 // Initialize models
 const models = initModels(sequelize);
@@ -33,6 +33,7 @@ sequelize.sync({ alter: true }) // Use alter to avoid data loss
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/datasets', datasetRoutes);
+app.use('/api/analytics', analyticsRoutes); // Add analytics routes
 
 // Start server
 const PORT = process.env.PORT || 5452;

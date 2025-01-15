@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LoginForm from './components/LoginForm';
 import RegistrationForm from './components/RegistrationForm';
 import DatasetsPage from './components/DatasetsPage';
+import AnalyticsPage from './components/AnalyticsPage';
 import UploadDatasetPage from './components/UploadDatasetPage'; // Import UploadDatasetPage
 import DeleteDatasetPage from './components/DeleteDatasetPage'; // Import DeleteDatasetPage
 import api from './utils/api';
@@ -47,7 +48,6 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Redirect to login by default */}
         <Route path="/" element={<Navigate to="/login" />} />
         <Route
           path="/login"
@@ -71,7 +71,6 @@ const App = () => {
             )
           }
         />
-        {/* Add route for Upload Dataset page */}
         <Route
           path="/upload"
           element={
@@ -82,12 +81,21 @@ const App = () => {
             )
           }
         />
-        {/* Add route for Delete Dataset page */}
         <Route
           path="/delete"
           element={
             isLoggedIn ? (
               <DeleteDatasetPage />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            isLoggedIn ? (
+              <AnalyticsPage />
             ) : (
               <Navigate to="/login" />
             )
