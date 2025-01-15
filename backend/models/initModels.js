@@ -15,14 +15,15 @@ export default function initModels(sequelize) {
     // Define relationships
     Datasets.belongsTo(User, { foreignKey: 'uploaded_by', as: 'uploader' });
     User.hasMany(Datasets, { foreignKey: 'uploaded_by', as: 'datasets' });
-    Datasets.hasMany(DatasetEntries, { foreignKey: 'dataset_id', onDelete: 'CASCADE' });
-    DatasetEntries.belongsTo(Datasets, { foreignKey: 'dataset_id' });
 
-    DatasetUsage.belongsTo(Datasets, { foreignKey: 'dataset_id', as: 'dataset' });
-    Datasets.hasMany(DatasetUsage, { foreignKey: 'dataset_id', onDelete: 'CASCADE' });
+    Datasets.hasMany(DatasetEntries, { foreignKey: 'dataset_id', onDelete: 'CASCADE', as: 'entries' });
+    DatasetEntries.belongsTo(Datasets, { foreignKey: 'dataset_id', as: 'dataset' });
 
     UserActivity.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-    User.hasMany(UserActivity, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+    User.hasMany(UserActivity, { foreignKey: 'user_id', as: 'activities' });
+
+    DatasetUsage.belongsTo(Datasets, { foreignKey: 'dataset_id', as: 'dataset' });
+    Datasets.hasMany(DatasetUsage, { foreignKey: 'dataset_id', as: 'usageLogs' });
 
     return { User, Datasets, DatasetEntries, DatasetUsage, UserActivity };
 }

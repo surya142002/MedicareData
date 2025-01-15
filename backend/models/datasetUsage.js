@@ -35,7 +35,7 @@ class DatasetUsage extends Model {
                 },
             },
             {
-                sequelize,
+                sequelize, // Pass the Sequelize instance here
                 modelName: 'DatasetUsage',
                 tableName: 'DatasetUsage',
                 timestamps: false,

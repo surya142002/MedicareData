@@ -2,15 +2,35 @@ import express from 'express';
 import { uploadDataset, getDatasetEntries, deleteDataset } from '../controllers/datasetController.js';
 import Datasets from '../models/dataset.js';
 import { upload } from '../middleware/fileUpload.js';
-import { verifyToken } from '../middleware/authMiddleware.js'; // Import verifyToken middleware
+import { verifyToken } from '../middleware/authMiddleware.js'; 
+import { logUserActivity } from '../controllers/analyticsController.js';
+
 
 const router = express.Router();
 
 // Upload a new dataset
-router.post('/upload', verifyToken, upload.single('file'), uploadDataset);
+router.post('/upload', verifyToken, upload.single('file'), async (req, res, next) => {
+  try {
+      await uploadDataset(req, res);
+      const ipAddress = req.ip || 'Unknown IP';
+      await logUserActivity(req.user.id, 'dataset_upload', `Uploaded dataset: ${req.body.name}`, ipAddress);
+  } catch (error) {
+      next(error);
+  }
+});
+
 
 // Delete a dataset by ID
-router.delete('/:datasetId', verifyToken, deleteDataset);
+router.delete('/:datasetId', verifyToken, async (req, res, next) => {
+  try {
+      await deleteDataset(req, res);
+      const ipAddress = req.ip || 'Unknown IP';
+      await logUserActivity(req.user.id, 'dataset_delete', `Deleted dataset with ID: ${req.params.datasetId}`, ipAddress);
+  } catch (error) {
+      next(error);
+  }
+});
+
 
 // GET /datasets - Fetch all datasets metadata
 router.get('/', async (req, res) => {
@@ -27,6 +47,15 @@ router.get('/', async (req, res) => {
   
 
 // GET /datasets/:datasetId/entries - Fetch paginated dataset entries
-router.get('/:datasetId/entries', getDatasetEntries);
+router.get('/:datasetId/entries', verifyToken, async (req, res, next) => {
+  try {
+      await getDatasetEntries(req, res);
+      const ipAddress = req.ip || 'Unknown IP';
+      await logUserActivity(req.user.id, 'view_entries', `Viewed entries for dataset ID: ${req.params.datasetId}`, ipAddress);
+  } catch (error) {
+      next(error);
+  }
+});
+
 
 export default router;

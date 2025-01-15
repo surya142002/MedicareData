@@ -4,10 +4,11 @@ import fs from 'fs';
 import Datasets from '../models/dataset.js';
 import DatasetEntries from '../models/datasetEntries.js';
 import DatasetUsage from '../models/datasetUsage.js';
+import { logUserActivity } from './analyticsController.js'; // Ensure correct path
 import { parseDataset } from '../utils/datasetParser.js'; // Import your parsing utility
 import { Op } from 'sequelize';
 
-export const logDatasetUsage = async (datasetId, actionType, searchTerm = null) => {
+export const logDatasetUsage = async (datasetId, actionType, searchTerm) => {
     try {
         await DatasetUsage.create({
             dataset_id: datasetId,
@@ -40,7 +41,8 @@ export const uploadDataset = async (req, res) => {
             uploaded_by: req.user.id,
         });
 
-        await logDatasetUsage(dataset.id, 'upload');
+        // Log dataset upload
+        await logDatasetUsage(dataset.id, 'upload', null, req.user.id);
 
         const fileContent = fs.readFileSync(cleanedFile, 'utf-8');
         const rows = fileContent.split('\n').map(line => line.split('\t'));
@@ -74,16 +76,42 @@ export const uploadDataset = async (req, res) => {
 
 
 
+
 // delete a dataset by ID
 export const deleteDataset = async (req, res) => {
     try {
         const { datasetId } = req.params;
+
+        // Fetch the dataset to check if it exists
+        const dataset = await Datasets.findByPk(datasetId);
+        if (!dataset) {
+            return res.status(404).json({ message: 'Dataset not found' });
+        }
+
+        // Delete associated records in DatasetUsage
+        await DatasetUsage.destroy({ where: { dataset_id: datasetId } });
+
+        // Delete associated records in DatasetEntries (if applicable)
+        await DatasetEntries.destroy({ where: { dataset_id: datasetId } });
+
+        // Delete the dataset
         await Datasets.destroy({ where: { id: datasetId } });
+
+        // Log user activity
+        await logUserActivity(
+            req.user.id,
+            'dataset_delete',
+            `Deleted dataset with ID: ${datasetId}`,
+            req.ip
+        );
+
         res.status(200).json({ message: 'Dataset deleted successfully' });
     } catch (error) {
+        console.error('Error deleting dataset:', error.message);
         res.status(500).json({ message: 'Failed to delete dataset', error: error.message });
     }
 };
+
 
 
 
@@ -94,12 +122,14 @@ export const getDatasetEntries = async (req, res) => {
         const { searchTerm = '', page = 1, limit = 20 } = req.query;
         const offset = (page - 1) * limit;
 
-        console.log(`Fetching dataset entries for dataset: ${datasetId}, page: ${page}, searchTerm: "${searchTerm}"`);
+        const dataset = await Datasets.findByPk(datasetId);
+        if (!dataset) {
+            console.warn(`Dataset not found (ID: ${datasetId}, User: ${req.user.id})`);
+            return res.status(404).json({ message: 'Dataset not found' });
+        }
 
-        // Log the search action
-        await logDatasetUsage(datasetId, 'search', searchTerm);
+        await logDatasetUsage(datasetId, 'search', searchTerm || null, req.user.id);
 
-        // Build the where condition dynamically
         const whereCondition = {
             dataset_id: datasetId,
             ...(searchTerm && {
@@ -119,8 +149,6 @@ export const getDatasetEntries = async (req, res) => {
             order: [['created_at', 'DESC']],
         });
 
-        console.log(`Found ${entries.count} entries for dataset: ${datasetId}`);
-
         res.status(200).json({
             entries: entries.rows,
             count: entries.count,
@@ -128,8 +156,7 @@ export const getDatasetEntries = async (req, res) => {
             totalPages: Math.ceil(entries.count / limit),
         });
     } catch (error) {
-        console.error('Error fetching dataset entries:', error);
+        console.error(`Error fetching dataset entries (Dataset ID: ${datasetId}):`, error.message);
         res.status(500).json({ message: 'Failed to fetch dataset entries', error: error.message });
     }
 };
-

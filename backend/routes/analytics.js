@@ -9,35 +9,56 @@ const router = express.Router();
 router.get('/user-activity', async (req, res) => {
     try {
         const logs = await UserActivity.findAll({
+            attributes: ['action_type', 'action_details', 'timestamp', 'ip_address'],
+            include: [
+                {
+                    model: User,
+                    attributes: ['email'], // Include user email
+                },
+            ],
             order: [['timestamp', 'DESC']],
-            limit: 100, // Fetch recent 100 logs
+            limit: 100,
         });
-        res.json(logs);
+
+        res.json(logs.map(log => ({
+            actionType: log.action_type,
+            actionDetails: log.action_details,
+            timestamp: log.timestamp,
+            ipAddress: log.ip_address,
+            userEmail: log.User.email, // Include user email in the response
+        })));
     } catch (error) {
-        console.error('Error fetching user activity logs:', error.message);
         res.status(500).json({ message: 'Failed to fetch user activity logs', error: error.message });
     }
 });
+
 
 // Fetch dataset usage statistics
 router.get('/dataset-usage', async (req, res) => {
     try {
         const usage = await DatasetUsage.findAll({
-            attributes: [
-                'dataset_id',
-                'action_type',
-                'search_term',
-                [DatasetUsage.sequelize.fn('COUNT', DatasetUsage.sequelize.col('id')), 'usage_count'],
+            attributes: ['action_type', 'search_term', 'usage_count', 'timestamp'],
+            include: [
+                {
+                    model: Datasets,
+                    attributes: ['name'], // Include dataset name
+                },
             ],
-            group: ['dataset_id', 'action_type', 'search_term'],
-            order: [['usage_count', 'DESC']],
-            limit: 100, // Fetch top 100 logs
+            order: [['timestamp', 'DESC']],
+            limit: 100,
         });
-        res.json(usage);
+
+        res.json(usage.map(record => ({
+            datasetName: record.Dataset.name, // Include dataset name
+            actionType: record.action_type,
+            searchTerm: record.search_term,
+            usageCount: record.usage_count,
+            timestamp: record.timestamp,
+        })));
     } catch (error) {
-        console.error('Error fetching dataset usage:', error.message);
         res.status(500).json({ message: 'Failed to fetch dataset usage', error: error.message });
     }
 });
+
 
 export default router;

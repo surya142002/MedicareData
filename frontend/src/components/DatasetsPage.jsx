@@ -51,6 +51,9 @@ const DatasetsPage = ({ onLogout }) => {
         <button className="admin-button" onClick={() => navigate('/delete')}>
           Delete Dataset
         </button>
+        <button className="admin-button" onClick={() => navigate('/analytics')}>
+          Analytics
+        </button>
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>

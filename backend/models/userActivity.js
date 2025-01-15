@@ -1,7 +1,8 @@
-import { DataTypes, Model } from 'sequelize';
+// userActivity.js
+import { Model, DataTypes } from 'sequelize';
 
 class UserActivity extends Model {
-    static initModel(sequelize) {
+    static initModel(sequelizeInstance) {
         UserActivity.init(
             {
                 id: {
@@ -9,21 +10,12 @@ class UserActivity extends Model {
                     defaultValue: DataTypes.UUIDV4,
                     primaryKey: true,
                 },
-                user_id: {
-                    type: DataTypes.UUID,
-                    allowNull: false,
-                    references: {
-                        model: 'Users',
-                        key: 'id',
-                    },
-                },
                 action_type: {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
                 action_details: {
                     type: DataTypes.TEXT,
-                    allowNull: true,
                 },
                 timestamp: {
                     type: DataTypes.DATE,
@@ -31,14 +23,12 @@ class UserActivity extends Model {
                 },
                 ip_address: {
                     type: DataTypes.STRING,
-                    allowNull: true,
                 },
             },
             {
-                sequelize,
+                sequelize: sequelizeInstance,
                 modelName: 'UserActivity',
                 tableName: 'UserActivity',
-                timestamps: false,
             }
         );
     }

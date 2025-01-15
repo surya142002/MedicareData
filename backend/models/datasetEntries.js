@@ -31,6 +31,14 @@ class DatasetEntries extends Model {
             timestamps: false,
         });
     }
+
+    // Association method
+    static associate(models) {
+        DatasetEntries.belongsTo(models.Datasets, {
+            foreignKey: 'dataset_id',
+            as: 'dataset',
+        });
+    }
 }
 
 export default DatasetEntries;

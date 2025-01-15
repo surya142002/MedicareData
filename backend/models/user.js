@@ -20,6 +20,7 @@ class User extends Model {
             role: {
                 type: DataTypes.ENUM('user', 'admin'),
                 defaultValue: 'user',
+                allowNull: false,
             },
             created_at: {
                 type: DataTypes.DATE,
@@ -30,6 +31,18 @@ class User extends Model {
             modelName: 'User',
             tableName: 'Users',
             timestamps: false,
+        });
+    }
+
+    // Association method
+    static associate(models) {
+        User.hasMany(models.Datasets, {
+            foreignKey: 'uploaded_by',
+            as: 'datasets',
+        });
+        User.hasMany(models.UserActivity, {
+            foreignKey: 'user_id',
+            as: 'activities',
         });
     }
 }

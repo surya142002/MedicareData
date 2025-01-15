@@ -1,14 +1,27 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { register, login } from '../controllers/authController.js';
+import { logUserActivity } from '../controllers/analyticsController.js'; // Import logUserActivity
+
 
 const router = express.Router();
 
 // User registration route
-router.post('/register', register);
+router.post('/register', async (req, res, next) => {
+    try {
+        const { user } = await register(req, res);
+        const ipAddress = req.ip || 'Unknown IP';
+        await logUserActivity(req.body.id, 'register', 'User registered', ipAddress);
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 // User login route
 router.post('/login', login);
+
+
 
 // Token validation route
 router.get('/validate', (req, res) => {
