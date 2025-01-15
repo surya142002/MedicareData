@@ -47,11 +47,12 @@ export const getUserActivity = async (req, res) => {
     try {
         const userActivity = await UserActivity.findAll({
             include: {
-                association: 'user',
-                attributes: ['email'], // Include user email
+                model: User,
+                as: 'user', // Specify the alias
+                attributes: ['email'],
             },
             order: [['timestamp', 'DESC']],
-            limit: 100, // Fetch recent 100 logs
+            limit: 100,
         });
 
         const formattedLogs = userActivity.map(activity => ({
@@ -62,6 +63,7 @@ export const getUserActivity = async (req, res) => {
             timestamp: activity.timestamp,
         }));
 
+        console.log('User Activity Logs:', formattedLogs);
         res.json(formattedLogs);
     } catch (error) {
         console.error('Error fetching user activity logs:', error.message);
@@ -69,16 +71,18 @@ export const getUserActivity = async (req, res) => {
     }
 };
 
+
 // Fetch dataset usage logs
 export const getDatasetUsage = async (req, res) => {
     try {
         const datasetUsage = await DatasetUsage.findAll({
             include: {
-                association: 'dataset',
-                attributes: ['name'], // Include dataset name
+                model: Datasets,
+                as: 'dataset', // Specify the alias
+                attributes: ['name'],
             },
             order: [['timestamp', 'DESC']],
-            limit: 100, // Fetch recent 100 logs
+            limit: 100,
         });
 
         const formattedLogs = datasetUsage.map(usage => ({
@@ -90,6 +94,7 @@ export const getDatasetUsage = async (req, res) => {
             timestamp: usage.timestamp,
         }));
 
+        console.log('Dataset Usage Logs:', formattedLogs);
         res.json(formattedLogs);
     } catch (error) {
         console.error('Error fetching dataset usage logs:', error.message);

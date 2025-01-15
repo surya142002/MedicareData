@@ -22,7 +22,6 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', login);
 
 
-
 // Token validation route
 router.get('/validate', (req, res) => {
     const token = req.headers.authorization?.split(' ')[1]; // Extract token
