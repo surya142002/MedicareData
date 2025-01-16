@@ -65,8 +65,8 @@ const AnalyticsPage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {userActivity.map((activity) => (
-                                    <tr key={activity.id}>
+                                {userActivity.map((activity, index) => (
+                                    <tr key={activity.id || index}>
                                         <td>{activity.userEmail}</td>
                                         <td>{activity.actionType}</td>
                                         <td>{activity.actionDetails}</td>
@@ -112,8 +112,8 @@ const AnalyticsPage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {datasetUsage.map((usage) => (
-                                    <tr key={usage.id}>
+                                {datasetUsage.map((usage, index) => (
+                                    <tr key={usage.id || index}>
                                         <td>{usage.datasetName}</td>
                                         <td>{usage.actionType}</td>
                                         <td>{usage.searchTerm || 'N/A'}</td>
