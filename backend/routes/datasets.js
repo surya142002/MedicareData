@@ -2,14 +2,14 @@ import express from 'express';
 import { uploadDataset, getDatasetEntries, deleteDataset } from '../controllers/datasetController.js';
 import Datasets from '../models/dataset.js';
 import { upload } from '../middleware/fileUpload.js';
-import { verifyToken } from '../middleware/authMiddleware.js'; 
+import { verifyToken, isAdmin } from '../middleware/authMiddleware.js'; 
 import { logUserActivity } from '../controllers/analyticsController.js';
 
 
 const router = express.Router();
 
 // Upload a new dataset
-router.post('/upload', verifyToken, upload.single('file'), async (req, res, next) => {
+router.post('/upload', verifyToken, isAdmin, upload.single('file'), async (req, res, next) => {
   try {
       await uploadDataset(req, res);
       const ipAddress = req.ip || 'Unknown IP';
@@ -21,7 +21,7 @@ router.post('/upload', verifyToken, upload.single('file'), async (req, res, next
 
 
 // Delete a dataset by ID
-router.delete('/:datasetId', verifyToken, async (req, res, next) => {
+router.delete('/:datasetId', verifyToken, isAdmin, async (req, res, next) => {
   try {
       await deleteDataset(req, res);
       const ipAddress = req.ip || 'Unknown IP';

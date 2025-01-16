@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
+import { decodeJWT } from '../utils/decodeJWT'; // Import decodeJWT
+
 
 const LoginForm = ({ setIsLoggedIn }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -16,7 +18,13 @@ const LoginForm = ({ setIsLoggedIn }) => {
     e.preventDefault();
     try {
       const response = await api.post('/auth/login', formData);
-      localStorage.setItem('token', response.data.token);
+      const { token } = response.data;
+
+      // Decode token to extract role
+      const decodedToken = decodeJWT(token);
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', decodedToken.role);
+
       setIsLoggedIn(true);
       navigate('/datasets', { replace: true });
     } catch (err) {

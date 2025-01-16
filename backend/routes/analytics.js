@@ -3,11 +3,12 @@ import UserActivity from '../models/userActivity.js';
 import DatasetUsage from '../models/datasetUsage.js';
 import User from '../models/user.js'; // Import User model
 import Datasets from '../models/dataset.js'; // Import Datasets model
+import { isAdmin, verifyToken } from '../middleware/authMiddleware.js'; 
 
 const router = express.Router();
 
 // Fetch user activity logs with pagination
-router.get('/user-activity', async (req, res) => {
+router.get('/user-activity', verifyToken, isAdmin, async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 items per page
         const offset = (page - 1) * limit;
@@ -45,7 +46,7 @@ router.get('/user-activity', async (req, res) => {
 });
 
 // Fetch dataset usage statistics with pagination
-router.get('/dataset-usage', async (req, res) => {
+router.get('/dataset-usage', verifyToken, isAdmin, async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
         const offset = (page - 1) * limit;

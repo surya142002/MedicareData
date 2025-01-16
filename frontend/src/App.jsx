@@ -4,9 +4,10 @@ import LoginForm from './components/LoginForm';
 import RegistrationForm from './components/RegistrationForm';
 import DatasetsPage from './components/DatasetsPage';
 import AnalyticsPage from './components/AnalyticsPage';
-import UploadDatasetPage from './components/UploadDatasetPage'; // Import UploadDatasetPage
-import DeleteDatasetPage from './components/DeleteDatasetPage'; // Import DeleteDatasetPage
+import UploadDatasetPage from './components/UploadDatasetPage';
+import DeleteDatasetPage from './components/DeleteDatasetPage';
 import api from './utils/api';
+import { decodeJWT } from './utils/decodeJWT';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,10 +24,13 @@ const App = () => {
 
       try {
         await api.get('/auth/validate'); // Validate token
+        const decodedToken = decodeJWT(token);
+        localStorage.setItem('role', decodedToken.role); // Store role from token
         setIsLoggedIn(true);
       } catch (err) {
         console.error('Token validation failed:', err.response || err.message);
         localStorage.removeItem('token'); // Clear invalid token
+        localStorage.removeItem('role'); // Clear role
         setIsLoggedIn(false);
       } finally {
         setLoading(false);
@@ -38,7 +42,13 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
     setIsLoggedIn(false);
+  };
+
+  const ProtectedAdminRoute = ({ element }) => {
+    const role = localStorage.getItem('role');
+    return role === 'admin' ? element : <Navigate to="/datasets" />;
   };
 
   if (loading) {
@@ -64,42 +74,20 @@ const App = () => {
         <Route
           path="/datasets"
           element={
-            isLoggedIn ? (
-              <DatasetsPage onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/login" />
-            )
+            isLoggedIn ? <DatasetsPage onLogout={handleLogout} /> : <Navigate to="/login" />
           }
         />
         <Route
           path="/upload"
-          element={
-            isLoggedIn ? (
-              <UploadDatasetPage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={<ProtectedAdminRoute element={<UploadDatasetPage />} />}
         />
         <Route
           path="/delete"
-          element={
-            isLoggedIn ? (
-              <DeleteDatasetPage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={<ProtectedAdminRoute element={<DeleteDatasetPage />} />}
         />
         <Route
           path="/analytics"
-          element={
-            isLoggedIn ? (
-              <AnalyticsPage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={<ProtectedAdminRoute element={<AnalyticsPage />} />}
         />
       </Routes>
     </Router>
