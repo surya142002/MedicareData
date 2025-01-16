@@ -50,8 +50,15 @@ router.get('/', async (req, res) => {
 router.get('/:datasetId/entries', verifyToken, async (req, res, next) => {
   try {
       await getDatasetEntries(req, res);
+      const { datasetId } = req.params;
+      // Fetch the dataset to check if it exists
+      const dataset = await Datasets.findByPk(datasetId);
+      if (!dataset) {
+          return res.status(404).json({ message: 'Dataset not found' });
+      }
+
       const ipAddress = req.ip || 'Unknown IP';
-      await logUserActivity(req.user.id, 'view_entries', `Viewed entries for dataset ID: ${req.params.datasetId}`, ipAddress);
+      await logUserActivity(req.user.id, 'view_entries', `Viewed entries for dataset: ${dataset.name}`, ipAddress);
   } catch (error) {
       next(error);
   }
