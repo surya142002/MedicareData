@@ -42,7 +42,7 @@ export const uploadDataset = async (req, res) => {
         });
 
         // Log dataset upload
-        await logDatasetUsage(dataset.id, 'upload', null, req.user.id);
+        await logDatasetUsage(dataset.name, 'upload', null, req.user.id);
 
         const fileContent = fs.readFileSync(cleanedFile, 'utf-8');
         const rows = fileContent.split('\n').map(line => line.split('\t'));
@@ -101,7 +101,7 @@ export const deleteDataset = async (req, res) => {
         await logUserActivity(
             req.user.id,
             'dataset_delete',
-            `Deleted dataset with ID: ${datasetId}`,
+            `Deleted dataset: ${dataset.name}`,
             req.ip
         );
 
