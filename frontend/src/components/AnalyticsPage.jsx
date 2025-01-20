@@ -117,7 +117,6 @@ const AnalyticsPage = () => {
                                     <th>Dataset Name</th>
                                     <th>Action</th>
                                     <th>Search Term</th>
-                                    <th>Usage Count</th>
                                     <th>Timestamp</th>
                                 </tr>
                             </thead>
@@ -127,7 +126,6 @@ const AnalyticsPage = () => {
                                         <td>{usage.datasetName}</td>
                                         <td>{usage.actionType}</td>
                                         <td>{usage.searchTerm || 'N/A'}</td>
-                                        <td>{usage.usageCount}</td>
                                         <td>{new Date(usage.timestamp).toLocaleString()}</td>
                                     </tr>
                                 ))}
