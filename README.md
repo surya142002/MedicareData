@@ -17,6 +17,7 @@ A web application designed to make browsing and searching Medicare public datase
 ### Admin Features
 
 - **Dataset Upload**: Upload new datasets via a user-friendly interface.
+- **Dataset Delete**: Delete datasets via a user-friendly interface.
 - **Analytics Dashboard**: View user activity and dataset usage statistics.
 
 ### Scalability & Security
@@ -40,7 +41,7 @@ A web application designed to make browsing and searching Medicare public datase
 - **Framework**: Node.js with Express
 - **Database**: PostgreSQL
 - **Authentication**: JWT and bcrypt
-- **File Uploads**: Multer
+- **File Uploads**: Multer (local)
 
 ### Additional Tools
 
