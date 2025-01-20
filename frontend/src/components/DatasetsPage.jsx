@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import DatasetTable from './DatasetsTable';
@@ -13,7 +13,7 @@ const DatasetsPage = ({ onLogout }) => {
     const fetchDatasets = async () => {
       try {
         const response = await api.get('/datasets');
-        console.log('Fetched datasets:', response.data); // Debugging
+        console.log('Fetched datasets:', response.data);
         setDatasets(response.data);
       } catch (error) {
         console.error('Error fetching datasets:', error);

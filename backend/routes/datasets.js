@@ -25,7 +25,6 @@ router.delete('/:datasetId', verifyToken, isAdmin, async (req, res, next) => {
   try {
       await deleteDataset(req, res);
       const ipAddress = req.ip || 'Unknown IP';
-      //await logUserActivity(req.user.id, 'dataset_delete', `Deleted dataset with ID: ${req.params.datasetId}`, ipAddress);
   } catch (error) {
       next(error);
   }
@@ -58,7 +57,7 @@ router.get('/:datasetId/entries', verifyToken, async (req, res, next) => {
       }
 
       const ipAddress = req.ip || 'Unknown IP';
-      await logUserActivity(req.user.id, 'view_entries', `Viewed entries for dataset: ${dataset.name}`, ipAddress);
+
   } catch (error) {
       next(error);
   }

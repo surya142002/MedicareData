@@ -129,6 +129,9 @@ export const getDatasetEntries = async (req, res) => {
         }
 
         await logDatasetUsage(datasetId, 'search', searchTerm || null, req.user.id);
+        if (searchTerm == ''){
+            await logUserActivity(req.user.id, 'view_dataset', `Viewed dataset: ${dataset.name}`, req.ip);
+        }
 
         const whereCondition = {
             dataset_id: datasetId,
