@@ -1,38 +1,45 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const UploadDatasetPage = () => {
+    // State variables
     const [formData, setFormData] = useState({ name: '', description: '', datasetType: '', file: null });
     const [message, setMessage] = useState('');
-    const [isUploading, setIsUploading] = useState(false); // Loading state
-    const [fileName, setFileName] = useState(''); // State for file name display
+    const [isUploading, setIsUploading] = useState(false);
+    const [fileName, setFileName] = useState('');
     const navigate = useNavigate();
 
+    // Handle form input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
+    // Handle file input changes
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setFormData({ ...formData, file });
         setFileName(file ? file.name : ''); // Update file name
     };
 
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsUploading(true); // Start loading
         try {
+            // Create a FormData object
             const uploadData = new FormData();
             uploadData.append('name', formData.name);
             uploadData.append('description', formData.description);
             uploadData.append('datasetType', formData.datasetType);
             uploadData.append('file', formData.file);
 
+            // Send dataset upload request to the backend
             const response = await api.post('/datasets/upload', uploadData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
+
             setMessage(response.data.message);
         } catch (error) {
             setMessage(error.response?.data?.message || 'Failed to upload dataset');
@@ -43,7 +50,9 @@ const UploadDatasetPage = () => {
 
     return (
         <div className="upload-page">
+            {/* Back button */}
             <button className="back-button" onClick={() => navigate('/datasets')}>Back</button>
+            {/* Upload form */}
             <div className="upload-container">
                 <h1 className="page-title">Upload Dataset</h1>
                 {isUploading && <p className="loading-message">Uploading...</p>}
@@ -63,6 +72,7 @@ const UploadDatasetPage = () => {
                         onChange={handleChange}
                         className="auth-form-input"
                     />
+                    {/* Dataset type dropdown */}
                     <label className="auth-form-label">Dataset Type:</label>
                         <select
                             name="datasetType"

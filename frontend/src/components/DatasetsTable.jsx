@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../utils/api';
 
 const DatasetTable = ({ datasetId, datasetName }) => {
+  // State variables
   const [entries, setEntries] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
@@ -9,10 +10,12 @@ const DatasetTable = ({ datasetId, datasetName }) => {
   // Fetch dataset entries from the backend
   const fetchEntries = async (page = 1, search = '') => {
     try {
+      // Fetch entries from the API
       const response = await api.get(`/datasets/${datasetId}/entries`, {
         params: { page, limit: 10, searchTerm: search },
       });
       setEntries(response.data.entries);
+      // Update pagination state
       setPagination({
         currentPage: response.data.currentPage,
         totalPages: response.data.totalPages,
@@ -28,18 +31,22 @@ const DatasetTable = ({ datasetId, datasetName }) => {
     fetchEntries(); // Fetch entries for the new dataset
   }, [datasetId]);
 
+  // searchbar handler
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
     fetchEntries(1, value); // Reset to the first page with the search term
   };
 
+  // Pagination handler
   const handlePageChange = (newPage) => {
     fetchEntries(newPage, searchTerm); // Fetch new page data
   };
 
+  // Render the component
   return (
     <div className="dataset-container">
+      {/* Dataset name */}
       <h2>{datasetName}</h2>
       <input
         type="text"
@@ -48,6 +55,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         onChange={handleSearch}
         className="search-bar"
       />
+      {/* Dataset table */}
       <table className="dataset-table">
         <thead>
           <tr>
@@ -64,6 +72,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
           ))}
         </tbody>
       </table>
+      {/* Pagination buttons */}
       <div className="pagination">
         <button
           onClick={() => handlePageChange(pagination.currentPage - 1)}

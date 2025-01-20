@@ -9,12 +9,21 @@ import DeleteDatasetPage from './components/DeleteDatasetPage';
 import api from './utils/api';
 import { decodeJWT } from './utils/decodeJWT';
 
+/**
+ * Main application component managing routing, authentication, 
+ * and user session validation.
+ */
 const App = () => {
+  // State to track if the user is logged in
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // State to track if the authentication process is still loading
   const [loading, setLoading] = useState(true);
 
+  // Validate the user's token on component mount.
   useEffect(() => {
     const validateToken = async () => {
+      // token from local storage
       const token = localStorage.getItem('token');
       if (!token) {
         setIsLoggedIn(false);
@@ -23,9 +32,12 @@ const App = () => {
       }
 
       try {
-        await api.get('/auth/validate'); // Validate token
+        // check validation with backend API
+        await api.get('/auth/validate');
+        // Decode token to get user role
         const decodedToken = decodeJWT(token);
-        localStorage.setItem('role', decodedToken.role); // Store role from token
+        // Store role from token in local storage
+        localStorage.setItem('role', decodedToken.role);
         setIsLoggedIn(true);
       } catch (err) {
         console.error('Token validation failed:', err.response || err.message);
@@ -33,26 +45,34 @@ const App = () => {
         localStorage.removeItem('role'); // Clear role
         setIsLoggedIn(false);
       } finally {
-        setLoading(false);
+        setLoading(false); // Done loading
       }
     };
 
     validateToken();
   }, []);
 
+
+  
+  // Log the user out by clearing stored credentials and session state.
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     setIsLoggedIn(false);
   };
 
+  /**
+     * Route guard for admin-only pages. 
+     * CONSIDER IF NEEDED
+  */
   const ProtectedAdminRoute = ({ element }) => {
     const role = localStorage.getItem('role');
     return role === 'admin' ? element : <Navigate to="/datasets" />;
   };
 
+  // Show a loading message while validating the token
   if (loading) {
-    return <div>Loading...</div>; // Show loading indicator while validating token
+    return <div>Loading...</div>;
   }
 
   return (

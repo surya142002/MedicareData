@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const AnalyticsPage = () => {
+    // Define state variables for user activity and dataset usage
     const [userActivity, setUserActivity] = useState([]);
     const [datasetUsage, setDatasetUsage] = useState([]);
     const [userActivityPage, setUserActivityPage] = useState(1);
@@ -11,8 +12,10 @@ const AnalyticsPage = () => {
     const [datasetUsageTotalPages, setDatasetUsageTotalPages] = useState(0);
     const navigate = useNavigate();
 
+    // Fetch user activity logs from the backend with pagination
     const fetchUserActivity = async (page) => {
         try {
+            // Fetch user activity data from the API
             const response = await api.get(`/analytics/user-activity?page=${page}&limit=10`);
             setUserActivity(response.data.data);
             setUserActivityTotalPages(response.data.totalPages);
@@ -21,8 +24,10 @@ const AnalyticsPage = () => {
         }
     };
 
+    // Fetch dataset usage logs from the backend with pagination
     const fetchDatasetUsage = async (page) => {
         try {
+            // Fetch dataset usage data from the API
             const response = await api.get(`/analytics/dataset-usage?page=${page}&limit=10`);
             setDatasetUsage(response.data.data);
             setDatasetUsageTotalPages(response.data.totalPages);
@@ -31,11 +36,13 @@ const AnalyticsPage = () => {
         }
     };
 
+    // Fetch data when the page changes
     useEffect(() => {
         fetchUserActivity(userActivityPage);
         fetchDatasetUsage(datasetUsagePage);
     }, [userActivityPage, datasetUsagePage]);
 
+    // Handle page change for user activity and dataset usage
     const handlePageChange = (type, newPage) => {
         if (type === 'userActivity' && newPage > 0 && newPage <= userActivityTotalPages) {
             setUserActivityPage(newPage);
@@ -45,11 +52,14 @@ const AnalyticsPage = () => {
         }
     };
 
+    // Render the analytics page
     return (
         <div className="analytics-page">
+            {/* Navigate back to datasets page */}
             <button className="back-button" onClick={() => navigate('/datasets')}>Back</button>
             <h1 className="page-title">Analytics Dashboard</h1>
 
+            {/* Render user activity and dataset usage sections */}
             <div className="analytics-section">
                 <h2 className="header-title">User Activity</h2>
                 {userActivity.length > 0 ? (
@@ -96,7 +106,7 @@ const AnalyticsPage = () => {
                     <p className="status-message">No user activity found.</p>
                 )}
             </div>
-
+            {/* Dataset Usage Section */}
             <div className="analytics-section">
                 <h2 className="header-title">Dataset Usage</h2>
                 {datasetUsage.length > 0 ? (

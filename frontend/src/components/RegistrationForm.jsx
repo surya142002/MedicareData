@@ -1,26 +1,31 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 
 const RegistrationForm = () => {
+  // State variables
   const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
     try {
+      // Send registration request to the backend
       await api.post('/auth/register', {
         email: formData.email,
         password: formData.password,
@@ -35,6 +40,7 @@ const RegistrationForm = () => {
 
   return (
     <div className="auth-page">
+      {/* Registration form */}
       <div className="auth-form-container">
         <h1 className="auth-form-title">Register</h1>
         {error && <p className="auth-form-error">{error}</p>}

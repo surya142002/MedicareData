@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
-import { decodeJWT } from '../utils/decodeJWT'; // Import decodeJWT
-
+import { decodeJWT } from '../utils/decodeJWT';
 
 const LoginForm = ({ setIsLoggedIn }) => {
+  // state variables
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // send login request to the backend
       const response = await api.post('/auth/login', formData);
       const { token } = response.data;
 
@@ -25,6 +28,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
       localStorage.setItem('token', token);
       localStorage.setItem('role', decodedToken.role);
 
+      // set the logged in state and navigate to datasets page
       setIsLoggedIn(true);
       navigate('/datasets', { replace: true });
     } catch (err) {
@@ -34,6 +38,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
 
   return (
     <div className="auth-page">
+      {/* Login form */}
       <div className="auth-form-container">
         <h1 className="auth-form-title">Login</h1>
         {error && <p className="auth-form-error">{error}</p>}

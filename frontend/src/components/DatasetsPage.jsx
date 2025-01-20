@@ -4,14 +4,17 @@ import api from '../utils/api';
 import DatasetTable from './DatasetsTable';
 
 const DatasetsPage = ({ onLogout }) => {
+  // State variables
   const [datasets, setDatasets] = useState([]);
   const [selectedDataset, setSelectedDataset] = useState(null);
   const navigate = useNavigate();
   const isAdmin = localStorage.getItem('role') === 'admin'; // Check role from localStorage
 
+  // Fetch datasets on component mount
   useEffect(() => {
     const fetchDatasets = async () => {
       try {
+        // Fetch datasets from the API
         const response = await api.get('/datasets');
         console.log('Fetched datasets:', response.data);
         setDatasets(response.data);
@@ -23,20 +26,26 @@ const DatasetsPage = ({ onLogout }) => {
       }
     };
 
+    // Call the fetchDatasets function
     fetchDatasets();
   }, [onLogout]);
 
+
+  // Handle dataset button click
   const handleDatasetClick = (dataset) => {
     setSelectedDataset(dataset);
   };
 
+  // Handle logout button click
   const handleLogout = () => {
     onLogout(); // Trigger logout callback
     navigate('/login', { replace: true }); // Ensure immediate redirection
   };
 
+  // Render the component
   return (
     <div className="datasets-page">
+      {/* Header with buttons */}
       <div className="header-buttons">
         {isAdmin && (
           <>
@@ -56,6 +65,7 @@ const DatasetsPage = ({ onLogout }) => {
         </button>
       </div>
 
+      {/* Datasets list */}
       <div className="header">
         <h1 className="header-title">Available Datasets</h1>
       </div>
@@ -76,6 +86,7 @@ const DatasetsPage = ({ onLogout }) => {
         )}
       </div>
 
+      {/* Dataset table */}
       {selectedDataset && (
         <div className="dataset-table-container">
           <DatasetTable datasetId={selectedDataset.id} datasetName={selectedDataset.name} />
