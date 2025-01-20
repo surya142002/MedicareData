@@ -2,15 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import sequelize from './config/db.js'; // Correct Sequelize instance
-import initModels from './models/initModels.js'; // Model initialization
+import sequelize from './config/db.js';
+import initModels from './models/initModels.js';
 import userRoutes from './routes/userRoutes.js';
 import datasetRoutes from './routes/datasetRoutes.js';
-import analyticsRoutes from './routes/analyticsRoutes.js'; // Import analytics routes
+import analyticsRoutes from './routes/analyticsRoutes.js';
 
 // Load environment variables
 dotenv.config();
 
+// Initialize express app
 const app = express();
 
 // Middleware

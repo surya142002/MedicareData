@@ -1,10 +1,18 @@
 import { DataTypes, Model } from 'sequelize';
 
+/**
+ * Represents a dataset uploaded by an admin.
+ * Contains metadata about the dataset, such as its name, description, and type.
+ */
 class Datasets extends Model {
+    /**
+     * Initializes the Datasets model with its fields and configurations.
+     * @param {Sequelize} sequelize - The Sequelize instance.
+     */
     static initModel(sequelize) {
         Datasets.init({
             id: {
-                type: DataTypes.UUID,
+                type: DataTypes.UUID, // UUID data type
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
             },
@@ -29,35 +37,38 @@ class Datasets extends Model {
             },
             uploaded_at: {
                 type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
+                defaultValue: DataTypes.NOW, // set default value to current timestamp
             },
             type: {
-                type: DataTypes.STRING, // New column for dataset type
+                type: DataTypes.STRING,
                 allowNull: false,
                 defaultValue: 'default',
             },
         }, {
             sequelize, // Pass the Sequelize instance here
-            modelName: 'Datasets',
-            tableName: 'Datasets',
+            modelName: 'Datasets', // Define the model name
+            tableName: 'Datasets', // Define the table name
             timestamps: false,
         });
     }
 
-    // Association method
+    /**
+     * Establishes associations between Datasets and other models.
+     * @param {Object} models - An object containing all initialized models.
+     */
     static associate(models) {
         Datasets.belongsTo(models.User, {
             foreignKey: 'uploaded_by',
-            as: 'uploader',
+            as: 'uploader', // alias for the association
         });
         Datasets.hasMany(models.DatasetEntries, {
             foreignKey: 'dataset_id',
-            onDelete: 'CASCADE',
+            onDelete: 'CASCADE', // delete all entries when a dataset is deleted
             as: 'entries',
         });
         Datasets.hasMany(models.DatasetUsage, {
             foreignKey: 'dataset_id',
-            as: 'usage',
+            as: 'usage', // alias for the association
         });
     }
 }

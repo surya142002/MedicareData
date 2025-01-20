@@ -1,6 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
 
+/**
+ * Represents the usage statistics for datasets.
+ * Tracks actions such as searches and views, along with metadata like timestamps and usage count.
+ */
 class DatasetUsage extends Model {
+    /**
+     * Initializes the DatasetUsage model with the required fields and configurations.
+     * @param {Sequelize} sequelize - The Sequelize instance.
+     */
     static initModel(sequelize) {
         DatasetUsage.init(
             {
@@ -14,7 +22,7 @@ class DatasetUsage extends Model {
                     allowNull: false,
                     references: {
                         model: 'Datasets',
-                        key: 'id',
+                        key: 'id', // key in Datasets table
                     },
                 },
                 action_type: {
@@ -27,17 +35,17 @@ class DatasetUsage extends Model {
                 },
                 usage_count: {
                     type: DataTypes.INTEGER,
-                    defaultValue: 1,
+                    defaultValue: 1, // set default value to 1 (Might use later)
                 },
                 timestamp: {
                     type: DataTypes.DATE,
-                    defaultValue: DataTypes.NOW,
+                    defaultValue: DataTypes.NOW, // set default value to current timestamp
                 },
             },
             {
                 sequelize, // Pass the Sequelize instance here
-                modelName: 'DatasetUsage',
-                tableName: 'DatasetUsage',
+                modelName: 'DatasetUsage', // Define the model name
+                tableName: 'DatasetUsage', // Define the table name
                 timestamps: false,
             }
         );

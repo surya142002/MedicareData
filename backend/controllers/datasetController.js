@@ -7,32 +7,31 @@ import { logUserActivity } from './analyticsController.js';
 import { parseDataset } from '../utils/datasetParser.js';
 import { Op } from 'sequelize';
 
-export const logDatasetUsage = async (datasetId, actionType, searchTerm) => {
-    try {
-        await DatasetUsage.create({
-            dataset_id: datasetId,
-            action_type: actionType,
-            search_term: searchTerm,
-        });
-    } catch (error) {
-        console.error('Error logging dataset usage:', error.message);
-    }
-};
-
-// Upload a new dataset
+/**
+ * Handles dataset upload by admin.
+ * - Cleans and parses the uploaded dataset file.
+ * - Inserts entries into the database.
+ * - Logs the dataset upload activity.
+ *
+ * @param {object} req - HTTP request containing the dataset file and metadata.
+ * @param {object} res - HTTP response object.
+ */
 export const uploadDataset = async (req, res) => {
     try {
+        // Validate request body
         const { name, description, datasetType } = req.body;
 
+        // Check if dataset type is valid
         if (!req.file) {
             return res.status(400).json({ message: 'File is required.' });
         }
-
         const inputFile = req.file.path;
         const cleanedFile = `${inputFile}_cleaned.txt`;
 
+        // Standardize and filter the dataset
         await standardizeAndFilter(inputFile, cleanedFile);
 
+        // Create a new dataset
         const dataset = await Datasets.create({
             name,
             description,
@@ -40,14 +39,13 @@ export const uploadDataset = async (req, res) => {
             uploaded_by: req.user.id,
         });
 
-        // Log dataset upload
-        await logDatasetUsage(dataset.name, 'upload', null, req.user.id);
-
+        // Parse the dataset and insert entries
         const fileContent = fs.readFileSync(cleanedFile, 'utf-8');
         const rows = fileContent.split('\n').map(line => line.split('\t'));
         const parsedRows = parseDataset(datasetType, rows);
-
         const failedEntries = [];
+
+        // Insert entries
         for (const row of parsedRows) {
             try {
                 await DatasetEntries.create({
@@ -60,6 +58,7 @@ export const uploadDataset = async (req, res) => {
         }
 
         if (failedEntries.length > 0) {
+            // Log failed entries
             console.error(`Failed to insert ${failedEntries.length} entries:`);
             failedEntries.forEach(failed =>
                 console.error(`Entry: ${JSON.stringify(failed.row)}, Error: ${failed.error}`)
@@ -75,8 +74,14 @@ export const uploadDataset = async (req, res) => {
 
 
 
-
-// delete a dataset by ID
+/**
+ * Deletes a dataset and its associated records.
+ * - Removes dataset entries and usage logs.
+ * - Logs the dataset deletion activity.
+ *
+ * @param {object} req - HTTP request containing the dataset ID.
+ * @param {object} res - HTTP response object.
+ */
 export const deleteDataset = async (req, res) => {
     try {
         const { datasetId } = req.params;
@@ -114,24 +119,35 @@ export const deleteDataset = async (req, res) => {
 
 
 
-// Fetch dataset entries with search and pagination
+/**
+ * Fetches dataset entries with optional search and pagination.
+ * - Supports filtering entries based on search term.
+ * - Logs dataset view or search activity.
+ *
+ * @param {object} req - HTTP request containing dataset ID, search term, and pagination details.
+ * @param {object} res - HTTP response object.
+ */
 export const getDatasetEntries = async (req, res) => {
     try {
+        // Fetch dataset entries with pagination
         const { datasetId } = req.params;
         const { searchTerm = '', page = 1, limit = 20 } = req.query;
         const offset = (page - 1) * limit;
 
+        // Fetch the dataset to check if it exists
         const dataset = await Datasets.findByPk(datasetId);
         if (!dataset) {
             console.warn(`Dataset not found (ID: ${datasetId}, User: ${req.user.id})`);
             return res.status(404).json({ message: 'Dataset not found' });
         }
+        // Log dataset view or search activity
         if (searchTerm == ''){
             await logUserActivity(req.user.id, 'view_dataset', `Viewed dataset: ${dataset.name}`, req.ip);
         } else {
             await logDatasetUsage(datasetId, 'search', searchTerm || null, req.user.id);
         }
 
+        // Fetch dataset entries
         const whereCondition = {
             dataset_id: datasetId,
             ...(searchTerm && {
@@ -144,6 +160,7 @@ export const getDatasetEntries = async (req, res) => {
             }),
         };
 
+        // Fetch entries with search term and pagination
         const entries = await DatasetEntries.findAndCountAll({
             where: whereCondition,
             limit: parseInt(limit, 10),
@@ -151,6 +168,7 @@ export const getDatasetEntries = async (req, res) => {
             order: [['created_at', 'DESC']],
         });
 
+        // Return paginated dataset entries
         res.status(200).json({
             entries: entries.rows,
             count: entries.count,

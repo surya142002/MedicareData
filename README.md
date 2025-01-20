@@ -45,7 +45,7 @@ A web application designed to make browsing and searching Medicare public datase
 ### Additional Tools
 
 - **Search**: Elasticsearch (for advanced search, planned)
-- **Hosting**: TBD (e.g., Netlify/Vercel for frontend, Heroku/AWS for backend)
+- **Hosting**: TBD (e.g., Netlify/Vercel for frontend, Heroku/AWS for backend, planned)
 
 ---
 

@@ -5,6 +5,7 @@ import User from '../models/user.js'; // Import User model
 import Datasets from '../models/dataset.js'; // Import Datasets model
 import { isAdmin, verifyToken } from '../middleware/userMiddleware.js'; 
 
+// Create a new router
 const router = express.Router();
 
 // Fetch user activity logs with pagination
@@ -13,6 +14,7 @@ router.get('/user-activity', verifyToken, isAdmin, async (req, res) => {
         const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 items per page
         const offset = (page - 1) * limit;
 
+        // Fetch user activity logs with user email
         const logs = await UserActivity.findAndCountAll({
             attributes: ['action_type', 'action_details', 'timestamp', 'ip_address'],
             include: [
@@ -27,6 +29,7 @@ router.get('/user-activity', verifyToken, isAdmin, async (req, res) => {
             offset: parseInt(offset, 10),
         });
 
+        // Return paginated user activity logs
         res.json({
             total: logs.count,
             totalPages: Math.ceil(logs.count / limit),
@@ -51,6 +54,7 @@ router.get('/dataset-usage', verifyToken, isAdmin, async (req, res) => {
         const { page = 1, limit = 10 } = req.query;
         const offset = (page - 1) * limit;
 
+        // Fetch dataset usage statistics with dataset name
         const usage = await DatasetUsage.findAndCountAll({
             attributes: ['action_type', 'search_term', 'usage_count', 'timestamp'],
             include: [
@@ -65,6 +69,7 @@ router.get('/dataset-usage', verifyToken, isAdmin, async (req, res) => {
             offset: parseInt(offset, 10),
         });
 
+        // Return paginated dataset usage statistics
         res.json({
             total: usage.count,
             totalPages: Math.ceil(usage.count / limit),

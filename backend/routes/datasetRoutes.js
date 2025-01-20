@@ -5,7 +5,7 @@ import { upload } from '../middleware/uploadMiddleware.js';
 import { verifyToken, isAdmin } from '../middleware/userMiddleware.js'; 
 import { logUserActivity } from '../controllers/analyticsController.js';
 
-
+// Create a new router
 const router = express.Router();
 
 // Upload a new dataset
@@ -13,6 +13,8 @@ router.post('/upload', verifyToken, isAdmin, upload.single('file'), async (req, 
   try {
       await uploadDataset(req, res);
       const ipAddress = req.ip || 'Unknown IP';
+
+      // Log user activity
       await logUserActivity(req.user.id, 'dataset upload', `Uploaded dataset: ${req.body.name}`, ipAddress);
   } catch (error) {
       next(error);
@@ -34,6 +36,7 @@ router.delete('/:datasetId', verifyToken, isAdmin, async (req, res, next) => {
 // GET /datasets - Fetch all datasets metadata
 router.get('/', async (req, res) => {
     try {
+      // Fetch all datasets ordered by uploaded_at date
       const datasets = await Datasets.findAll({
         order: [['uploaded_at', 'DESC']],
       });
@@ -50,14 +53,14 @@ router.get('/:datasetId/entries', verifyToken, async (req, res, next) => {
   try {
       await getDatasetEntries(req, res);
       const { datasetId } = req.params;
+
       // Fetch the dataset to check if it exists
       const dataset = await Datasets.findByPk(datasetId);
       if (!dataset) {
           return res.status(404).json({ message: 'Dataset not found' });
       }
 
-      const ipAddress = req.ip || 'Unknown IP';
-
+     const ipAddress = req.ip || 'Unknown IP';
   } catch (error) {
       next(error);
   }

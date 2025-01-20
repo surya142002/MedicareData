@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { register, login } from '../controllers/userController.js';
 import { logUserActivity } from '../controllers/analyticsController.js'; // Import logUserActivity
 
-
+// Create a new router
 const router = express.Router();
 
 // User registration route
