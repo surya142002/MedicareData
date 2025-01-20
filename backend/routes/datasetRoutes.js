@@ -1,8 +1,8 @@
 import express from 'express';
 import { uploadDataset, getDatasetEntries, deleteDataset } from '../controllers/datasetController.js';
 import Datasets from '../models/dataset.js';
-import { upload } from '../middleware/fileUpload.js';
-import { verifyToken, isAdmin } from '../middleware/authMiddleware.js'; 
+import { upload } from '../middleware/uploadMiddleware.js';
+import { verifyToken, isAdmin } from '../middleware/userMiddleware.js'; 
 import { logUserActivity } from '../controllers/analyticsController.js';
 
 
@@ -13,7 +13,7 @@ router.post('/upload', verifyToken, isAdmin, upload.single('file'), async (req, 
   try {
       await uploadDataset(req, res);
       const ipAddress = req.ip || 'Unknown IP';
-      await logUserActivity(req.user.id, 'dataset_upload', `Uploaded dataset: ${req.body.name}`, ipAddress);
+      await logUserActivity(req.user.id, 'dataset upload', `Uploaded dataset: ${req.body.name}`, ipAddress);
   } catch (error) {
       next(error);
   }

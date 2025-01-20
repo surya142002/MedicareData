@@ -3,7 +3,7 @@ import UserActivity from '../models/userActivity.js';
 import DatasetUsage from '../models/datasetUsage.js';
 import User from '../models/user.js'; // Import User model
 import Datasets from '../models/dataset.js'; // Import Datasets model
-import { isAdmin, verifyToken } from '../middleware/authMiddleware.js'; 
+import { isAdmin, verifyToken } from '../middleware/userMiddleware.js'; 
 
 const router = express.Router();
 

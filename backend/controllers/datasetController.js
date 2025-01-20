@@ -1,11 +1,10 @@
 import { standardizeAndFilter } from '../utils/dataCleaner.js';
-import path from 'path';
 import fs from 'fs';
 import Datasets from '../models/dataset.js';
 import DatasetEntries from '../models/datasetEntries.js';
 import DatasetUsage from '../models/datasetUsage.js';
-import { logUserActivity } from './analyticsController.js'; // Ensure correct path
-import { parseDataset } from '../utils/datasetParser.js'; // Import your parsing utility
+import { logUserActivity } from './analyticsController.js';
+import { parseDataset } from '../utils/datasetParser.js';
 import { Op } from 'sequelize';
 
 export const logDatasetUsage = async (datasetId, actionType, searchTerm) => {
@@ -127,10 +126,10 @@ export const getDatasetEntries = async (req, res) => {
             console.warn(`Dataset not found (ID: ${datasetId}, User: ${req.user.id})`);
             return res.status(404).json({ message: 'Dataset not found' });
         }
-
-        await logDatasetUsage(datasetId, 'search', searchTerm || null, req.user.id);
         if (searchTerm == ''){
             await logUserActivity(req.user.id, 'view_dataset', `Viewed dataset: ${dataset.name}`, req.ip);
+        } else {
+            await logDatasetUsage(datasetId, 'search', searchTerm || null, req.user.id);
         }
 
         const whereCondition = {

@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { register, login } from '../controllers/authController.js';
+import { register, login } from '../controllers/userController.js';
 import { logUserActivity } from '../controllers/analyticsController.js'; // Import logUserActivity
 
 

@@ -1,5 +1,4 @@
 import fs from 'fs';
-import re from 're';
 import chardet from 'chardet';
 
 // Unwanted phrases to filter out

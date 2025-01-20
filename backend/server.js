@@ -4,9 +4,9 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import sequelize from './config/db.js'; // Correct Sequelize instance
 import initModels from './models/initModels.js'; // Model initialization
-import authRoutes from './routes/authRoutes.js';
-import datasetRoutes from './routes/datasets.js';
-import analyticsRoutes from './routes/analytics.js'; // Import analytics routes
+import userRoutes from './routes/userRoutes.js';
+import datasetRoutes from './routes/datasetRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js'; // Import analytics routes
 
 // Load environment variables
 dotenv.config();
@@ -31,7 +31,7 @@ sequelize.sync({ alter: true }) // Use alter to avoid data loss
   .catch(err => console.error('Error synchronizing models:', err));
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', userRoutes);
 app.use('/api/datasets', datasetRoutes);
 app.use('/api/analytics', analyticsRoutes); // Add analytics routes
 
