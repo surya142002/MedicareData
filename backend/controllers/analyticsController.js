@@ -11,15 +11,14 @@ import DatasetUsage from '../models/datasetUsage.js';
  */
 export const logUserActivity = async (userId, actionType, actionDetails, ipAddress) => {
     try {
-        // Log the user activity
-        console.log('Logging User Activity:', {
-            userId,
-            actionType,
-            actionDetails,
-            ipAddress,
-        });
 
-        // Create a new user activity log
+        console.log('Creating User Activity:', {
+            user_id: userId,
+            action_type: actionType,
+            action_details: actionDetails,
+            ip_address: ipAddress || 'Unknown IP',
+        });
+        
         await UserActivity.create({
             user_id: userId,
             action_type: actionType,
@@ -28,9 +27,10 @@ export const logUserActivity = async (userId, actionType, actionDetails, ipAddre
         });
     } catch (error) {
         console.error('Error logging user activity:', error.message);
-        throw error; // Throw to ensure errors are caught in the calling function
+        throw error; // Ensure errors are caught in the calling function
     }
 };
+
 
 /**
  * Fetches user activity logs with pagination.

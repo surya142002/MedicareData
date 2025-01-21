@@ -11,7 +11,7 @@ router.post('/register', async (req, res, next) => {
     try {
         const { user } = await register(req, res);
         const ipAddress = req.ip || 'Unknown IP';
-        await logUserActivity(req.body.id, 'register', 'User registered', ipAddress);
+        await logUserActivity(user.id, 'register', 'User registered', ipAddress);
     } catch (error) {
         next(error);
     }
