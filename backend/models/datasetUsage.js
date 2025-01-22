@@ -25,6 +25,14 @@ class DatasetUsage extends Model {
                         key: 'id', // key in Datasets table
                     },
                 },
+                user_id: {
+                    type: DataTypes.UUID,
+                    allowNull: true,
+                    references: {
+                        model: 'Users',
+                        key: 'id', // key in Users table
+                    },
+                },
                 action_type: {
                     type: DataTypes.STRING,
                     allowNull: false,
@@ -49,6 +57,16 @@ class DatasetUsage extends Model {
                 timestamps: false,
             }
         );
+    }
+    static associate(models) {
+        DatasetUsage.belongsTo(models.User, {
+            foreignKey: 'user_id',
+            as: 'user',
+        });
+        DatasetUsage.belongsTo(models.Datasets, {
+            foreignKey: 'dataset_id',
+            as: 'dataset',
+        });
     }
 }
 

@@ -18,6 +18,14 @@ class UserActivity extends Model {
                     defaultValue: DataTypes.UUIDV4,
                     primaryKey: true,
                 },
+                user_id: {
+                    type: DataTypes.UUID,
+                    allowNull: true,
+                    references: {
+                        model: 'Users',
+                        key: 'id', // key in Users table
+                    },
+                },
                 action_type: {
                     type: DataTypes.STRING,
                     allowNull: false, // Action type is required
@@ -37,8 +45,16 @@ class UserActivity extends Model {
                 sequelize: sequelizeInstance, // Associate with Sequelize instance
                 modelName: 'UserActivity', // Name of the model
                 tableName: 'UserActivity', // Name of the table in the database
+                timestamps: false, // Disable timestamps
             }
         );
+    }
+
+    static associate(models) {
+        UserActivity.belongsTo(models.User, {
+            foreignKey: 'user_id',
+            as: 'user',
+        });
     }
 }
 

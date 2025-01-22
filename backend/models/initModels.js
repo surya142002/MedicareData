@@ -36,5 +36,10 @@ export default function initModels(sequelize) {
     DatasetUsage.belongsTo(Datasets, { foreignKey: 'dataset_id', as: 'dataset' });
     Datasets.hasMany(DatasetUsage, { foreignKey: 'dataset_id', as: 'usageLogs' });
 
+    // DatasetUsage and Users
+    DatasetUsage.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+    User.hasMany(DatasetUsage, { foreignKey: 'user_id', as: 'usageLogs' });
+
+
     return { User, Datasets, DatasetEntries, DatasetUsage, UserActivity };
 }
