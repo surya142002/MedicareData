@@ -81,6 +81,16 @@ export const getUserActivity = async (req, res) => {
  */
 export const logDatasetUsage = async (datasetId, actionType, searchTerm = null, userId = null) => {
     try {
+
+
+        console.log('Creating Dataset Usage:', {
+            dataset_id: datasetId,
+            action_type: actionType,
+            search_term: searchTerm,
+            user_id: userId,
+        });
+
+
         // Log the dataset usage
         await DatasetUsage.create({
             dataset_id: datasetId,
