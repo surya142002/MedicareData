@@ -15,14 +15,14 @@ export const logUserActivity = async (userId, actionType, actionDetails, ipAddre
             throw new Error('userId and actionType are required to log user activity.');
         }
         const normalizedIp = ipAddress.startsWith('::ffff:') ? ipAddress.slice(7) : ipAddress;
-
+        /*
         console.log('Creating User Activity:', {
             user_id: userId,
             action_type: actionType,
             action_details: actionDetails,
             ip_address: normalizedIp || 'Unknown IP',
         });
-        
+        */
         await UserActivity.create({
             user_id: userId,
             action_type: actionType,
