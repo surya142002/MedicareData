@@ -1,10 +1,17 @@
-import { MockUser } from '../test-utils/mockDb';
+import db from './dbTestConfig.js';
+import initModels from '../models/initModels.js';
 
-jest.mock('../models/initModels', () => jest.fn(() => ({
-  User: require('../test-utils/mockDb').MockUser,
-  UserActivity: require('../test-utils/mockDb').MockUserActivity,
-})));
+// Initialize models
+const models = initModels(db);
 
-export default {
-  setupFilesAfterEnv: ['<rootDir>/__tests__/jest.setup.js'],
-};
+beforeAll(async () => {
+  // Sync models with the in-memory SQLite database
+  await db.sync();
+});
+
+afterAll(async () => {
+  // Close the database connection
+  await db.close();
+});
+
+export { db, models };

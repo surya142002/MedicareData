@@ -37,6 +37,10 @@ export const register = async (req, res) => {
             role: 'user',
         });
 
+        // Log user registration activity
+        const ipAddress = req.ip || req.headers['x-forwarded-for'] || 'Unknown IP';
+        await logUserActivity(user.id, 'register', 'User registered', ipAddress);
+
         // Log user registration
         res.status(201).json({
             message: 'User registered successfully',

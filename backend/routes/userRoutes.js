@@ -7,20 +7,10 @@ import { logUserActivity } from '../controllers/analyticsController.js'; // Impo
 const router = express.Router();
 
 // User registration route
-router.post('/register', async (req, res, next) => {
-    try {
-        const { user } = await register(req, res);
-        const ipAddress = req.ip || 'Unknown IP';
-        await logUserActivity(user.id, 'register', 'User registered', ipAddress);
-    } catch (error) {
-        next(error);
-    }
-});
-
+router.post('/register', register)
 
 // User login route
 router.post('/login', login);
-
 
 // Token validation route
 router.get('/validate', (req, res) => {
