@@ -16,11 +16,15 @@ import { Op } from 'sequelize';
  */
 export const uploadDataset = async (req, res) => {
     try {
+        //console.log('Request Body:', req.body);
+        //console.log('Uploaded File:', req.file);
+
         // Extract dataset details from request body
         const { name, description, datasetType } = req.body;
 
         // Validate file upload
         if (!req.file) {
+            //console.log('No file uploaded in request.');
             return res.status(400).json({ message: 'File is required.' });
         }
 
@@ -142,7 +146,7 @@ export const getDatasetEntries = async (req, res) => {
         // Fetch the dataset to check if it exists
         const dataset = await Datasets.findByPk(datasetId);
         if (!dataset) {
-            console.warn(`Dataset not found (ID: ${datasetId}, User: ${req.user.id})`);
+            // console.warn(`Dataset not found (ID: ${datasetId}, User: ${req.user.id})`);
             return res.status(404).json({ message: 'Dataset not found' });
         }
         // Log user activity
