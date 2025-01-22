@@ -27,7 +27,7 @@ sequelize.authenticate()
     .catch(err => console.error('Error connecting to database:', err));
 
 // Synchronize models with the database
-sequelize.sync({ alter: true }) // Use alter to avoid data loss
+sequelize.sync({ alter: false }) // Use alter to avoid data loss
   .then(() => console.log('Models synchronized with database.'))
   .catch(err => console.error('Error synchronizing models:', err));
 
