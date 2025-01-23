@@ -1,52 +1,48 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import api from '../utils/api';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import api from "../utils/api";
+import React from "react";
 
 const RegistrationForm = () => {
-  // State variables
-  const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     try {
-      // Send registration request to the backend
-      await api.post('/auth/register', {
+      await api.post("/auth/register", {
         email: formData.email,
         password: formData.password,
       });
-      alert('Registration successful! Please log in.');
-      navigate('/login'); // Redirect to login page
+      alert("Registration successful! Please log in.");
+      navigate("/login");
     } catch (err) {
-      console.error('Registration Error:', err);
-      setError(err.response?.data?.message || 'An error occurred');
+      console.error("Registration Error:", err);
+      setError(err.response?.data?.message || "An error occurred");
     }
   };
 
   return (
     <div className="auth-page">
-      {/* Registration form */}
       <div className="auth-form-container">
         <h1 className="auth-form-title">Register</h1>
         {error && <p className="auth-form-error">{error}</p>}
         <form onSubmit={handleSubmit} className="auth-form">
-          <label className="auth-form-label">Email:</label>
+          <label htmlFor="register-email" className="auth-form-label">Email:</label>
           <input
+            id="register-email"
             type="email"
             name="email"
             value={formData.email}
@@ -54,8 +50,9 @@ const RegistrationForm = () => {
             required
             className="auth-form-input"
           />
-          <label className="auth-form-label">Password:</label>
+          <label htmlFor="register-password" className="auth-form-label">Password:</label>
           <input
+            id="register-password"
             type="password"
             name="password"
             value={formData.password}
@@ -63,8 +60,9 @@ const RegistrationForm = () => {
             required
             className="auth-form-input"
           />
-          <label className="auth-form-label">Confirm Password:</label>
+          <label htmlFor="register-confirmPassword" className="auth-form-label">Confirm Password:</label>
           <input
+            id="register-confirmPassword"
             type="password"
             name="confirmPassword"
             value={formData.confirmPassword}
