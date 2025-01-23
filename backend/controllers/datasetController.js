@@ -45,7 +45,7 @@ export const uploadDataset = async (req, res) => {
 
 
         // Log dataset upload
-        await logDatasetUsage(dataset.name, 'upload', null, req.user.id);
+        await logDatasetUsage(dataset.id, 'upload', null, req.user.id);
 
         // Read the cleaned file and parse the data
         const fileContent = fs.readFileSync(cleanedFile, 'utf-8');

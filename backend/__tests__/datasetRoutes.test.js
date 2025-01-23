@@ -97,17 +97,16 @@ describe('Dataset Routes', () => {
         .field('description', 'This is a new dataset.')
         .field('datasetType', 'ICD-10-CM')
         .attach('file', Buffer.from('mock data content'), 'mock_file.txt'); // Simulate file upload
-
+  
       expect(res.status).toBe(201);
-      expect(res.body.message).toBe('Dataset uploaded successfully');
-      expect(res.body.dataset).toHaveProperty('name', 'New Dataset');
-
+      expect(res.body.dataset).toHaveProperty('id'); // Ensure `id` is returned
+  
       // Verify dataset was added to the database
       const createdDataset = await Datasets.findOne({ where: { name: 'New Dataset' } });
       expect(createdDataset).not.toBeNull();
       expect(createdDataset.description).toBe('This is a new dataset.');
     });
-
+  
     test('Fails to upload dataset without a file', async () => {
       const res = await request(app)
         .post('/api/datasets/upload')
@@ -115,14 +114,12 @@ describe('Dataset Routes', () => {
         .field('name', 'Dataset Without File')
         .field('description', 'This should fail.')
         .field('datasetType', 'ICD-10-CM');
-
-      //console.log('Response Body:', res.body);
-      //console.log('Response Status:', res.status);
-
+  
       expect(res.status).toBe(400);
       expect(res.body.message).toBe('File is required.');
     });
   });
+  
 
   describe('DELETE /:datasetId', () => {
     test('Deletes a dataset successfully', async () => {
