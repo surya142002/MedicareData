@@ -1,70 +1,81 @@
-import express from 'express';
-import { uploadDataset, getDatasetEntries, deleteDataset } from '../controllers/datasetController.js';
-import Datasets from '../models/dataset.js';
-import { upload } from '../middleware/uploadMiddleware.js';
-import { verifyToken, isAdmin } from '../middleware/userMiddleware.js'; 
-import { logUserActivity } from '../controllers/analyticsController.js';
+import express from "express";
+import {
+  uploadDataset,
+  getDatasetEntries,
+  deleteDataset,
+} from "../controllers/datasetController.js";
+import Datasets from "../models/dataset.js";
+import { upload } from "../middleware/uploadMiddleware.js";
+import { verifyToken, isAdmin } from "../middleware/userMiddleware.js";
+import { logUserActivity } from "../controllers/analyticsController.js";
 
 // Create a new router
 const router = express.Router();
 
 // Upload a new dataset
-router.post('/upload', verifyToken, isAdmin, upload.single('file'), async (req, res, next) => {
-  try {
+router.post(
+  "/upload",
+  verifyToken,
+  isAdmin,
+  upload.single("file"),
+  async (req, res, next) => {
+    try {
       await uploadDataset(req, res);
-      const ipAddress = req.ip || 'Unknown IP';
+      const ipAddress = req.ip || "Unknown IP";
 
       // Log user activity
-      await logUserActivity(req.user.id, 'dataset upload', `Uploaded dataset: ${req.body.name}`, ipAddress);
-  } catch (error) {
+      await logUserActivity(
+        req.user.id,
+        "dataset upload",
+        `Uploaded dataset: ${req.body.name}`,
+        ipAddress
+      );
+    } catch (error) {
       next(error);
+    }
   }
-});
-
+);
 
 // Delete a dataset by ID
-router.delete('/:datasetId', verifyToken, isAdmin, async (req, res, next) => {
+router.delete("/:datasetId", verifyToken, isAdmin, async (req, res, next) => {
   try {
-      await deleteDataset(req, res);
-      const ipAddress = req.ip || 'Unknown IP';
+    await deleteDataset(req, res);
+    const ipAddress = req.ip || "Unknown IP";
   } catch (error) {
-      next(error);
+    next(error);
   }
 });
-
 
 // GET /datasets - Fetch all datasets metadata
-router.get('/', async (req, res) => {
-    try {
-      // Fetch all datasets ordered by uploaded_at date
-      const datasets = await Datasets.findAll({
-        order: [['uploaded_at', 'DESC']],
-      });
-      res.json(datasets);
-    } catch (error) {
-      console.error('Error fetching datasets:', error);
-      res.status(500).json({ error: 'Failed to fetch datasets' });
-    }
-  });
-  
-
-// GET /datasets/:datasetId/entries - Fetch paginated dataset entries
-router.get('/:datasetId/entries', verifyToken, async (req, res, next) => {
+router.get("/", async (req, res) => {
   try {
-      await getDatasetEntries(req, res);
-      const { datasetId } = req.params;
-
-      // Fetch the dataset to check if it exists
-      const dataset = await Datasets.findByPk(datasetId);
-      if (!dataset) {
-          return res.status(404).json({ message: 'Dataset not found' });
-      }
-
-     const ipAddress = req.ip || 'Unknown IP';
+    // Fetch all datasets ordered by uploaded_at date
+    const datasets = await Datasets.findAll({
+      order: [["uploaded_at", "DESC"]],
+    });
+    res.json(datasets);
   } catch (error) {
-      next(error);
+    console.error("Error fetching datasets:", error);
+    res.status(500).json({ error: "Failed to fetch datasets" });
   }
 });
 
+// GET /datasets/:datasetId/entries - Fetch paginated dataset entries
+router.get("/:datasetId/entries", verifyToken, async (req, res, next) => {
+  try {
+    await getDatasetEntries(req, res);
+    const { datasetId } = req.params;
+
+    // Fetch the dataset to check if it exists
+    const dataset = await Datasets.findByPk(datasetId);
+    if (!dataset) {
+      return res.status(404).json({ message: "Dataset not found" });
+    }
+
+    const ipAddress = req.ip || "Unknown IP";
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default router;

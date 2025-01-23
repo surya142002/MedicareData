@@ -1,4 +1,4 @@
-import multer from 'multer';
+import multer from "multer";
 
 /**
  * Configures storage options for file uploads using multer.
@@ -6,12 +6,12 @@ import multer from 'multer';
  * - `filename`: Names the uploaded file with a timestamp prefix to avoid overwriting.
  */
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Ensure the 'uploads' directory exists
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}_${file.originalname}`);
-    },
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Ensure the 'uploads' directory exists
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}_${file.originalname}`);
+  },
 });
 
 /**
@@ -20,12 +20,12 @@ const storage = multer.diskStorage({
  * - Rejects invalid file types with an appropriate error.
  */
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['text/plain']; // List of acceptable MIME types
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true); // Accept the file
-    } else {
-        cb(new Error('Invalid file type. Only TXT files are allowed.')); // reject the file
-    }
+  const allowedTypes = ["text/plain"]; // List of acceptable MIME types
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true); // Accept the file
+  } else {
+    cb(new Error("Invalid file type. Only TXT files are allowed.")); // reject the file
+  }
 };
 
 /**

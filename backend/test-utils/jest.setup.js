@@ -1,5 +1,5 @@
-import db from './dbTestConfig.js';
-import initModels from '../models/initModels.js';
+import db from "./dbTestConfig.js";
+import initModels from "../models/initModels.js";
 
 // Initialize models
 const models = initModels(db);
@@ -14,4 +14,5 @@ afterAll(async () => {
   await db.close();
 });
 
+// Export the database connection and models
 export { db, models };
