@@ -20,29 +20,27 @@ jest.mock('../middleware/userMiddleware.js', () => ({
 
 // Mock file upload
 jest.mock('../middleware/uploadMiddleware.js', () => ({
-    upload: {
-      single: () => (req, res, next) => {
-        if (!req.headers['x-mock-no-file']) {
-          req.file = {
-            path: 'uploads/mock_file.txt',
-            originalname: 'mock_file.txt',
-            mimetype: 'text/plain',
-          }; // Mock uploaded file
-        }
-        req.body = {
-          ...req.body,
-          name: req.body.name || 'New Dataset',
-          description: req.body.description || 'This is a new dataset.',
-          datasetType: req.body.datasetType || 'ICD-10-CM',
-        };
-        next();
-      },
+  upload: {
+    single: () => (req, res, next) => {
+      if (!req.headers['x-mock-no-file']) {
+        req.file = {
+          path: 'uploads/mock_file.txt',
+          originalname: 'mock_file.txt',
+          mimetype: 'text/plain',
+        }; // Mock uploaded file
+      }
+      req.body = {
+        ...req.body,
+        name: req.body.name || 'New Dataset',
+        description: req.body.description || 'This is a new dataset.',
+        datasetType: req.body.datasetType || 'ICD-10-CM',
+      };
+      next();
     },
+  },
 }));
-  
-  
 
-const { Datasets, DatasetEntries, User } = models;
+const { Datasets, DatasetEntries, DatasetUsage, User } = models;
 let user, dataset;
 
 describe('Dataset Routes', () => {
@@ -60,9 +58,10 @@ describe('Dataset Routes', () => {
     fs.writeFileSync(filePath, 'mock data content');
 
     // Clear database tables
-    await DatasetEntries.destroy({ where: {}, truncate: false });
-    await Datasets.destroy({ where: {}, truncate: false });
-    await User.destroy({ where: {}, truncate: false });
+    await DatasetEntries.destroy({ where: {}, truncate: { cascade: true } });
+    await DatasetUsage.destroy({ where: {}, truncate: { cascade: true } });
+    await Datasets.destroy({ where: {}, truncate: { cascade: true } });
+    await User.destroy({ where: {}, truncate: { cascade: true } });
 
     // Create a mock user
     user = await User.create({
@@ -87,7 +86,6 @@ describe('Dataset Routes', () => {
     const uploadDir = path.join(__dirname, '../uploads');
     fs.rmSync(uploadDir, { recursive: true, force: true });
   });
-  
 
   describe('POST /upload', () => {
     test('Uploads a dataset successfully', async () => {
@@ -97,16 +95,16 @@ describe('Dataset Routes', () => {
         .field('description', 'This is a new dataset.')
         .field('datasetType', 'ICD-10-CM')
         .attach('file', Buffer.from('mock data content'), 'mock_file.txt'); // Simulate file upload
-  
+
       expect(res.status).toBe(201);
       expect(res.body.dataset).toHaveProperty('id'); // Ensure `id` is returned
-  
+
       // Verify dataset was added to the database
       const createdDataset = await Datasets.findOne({ where: { name: 'New Dataset' } });
       expect(createdDataset).not.toBeNull();
       expect(createdDataset.description).toBe('This is a new dataset.');
     });
-  
+
     test('Fails to upload dataset without a file', async () => {
       const res = await request(app)
         .post('/api/datasets/upload')
@@ -114,12 +112,11 @@ describe('Dataset Routes', () => {
         .field('name', 'Dataset Without File')
         .field('description', 'This should fail.')
         .field('datasetType', 'ICD-10-CM');
-  
+
       expect(res.status).toBe(400);
       expect(res.body.message).toBe('File is required.');
     });
   });
-  
 
   describe('DELETE /:datasetId', () => {
     test('Deletes a dataset successfully', async () => {
