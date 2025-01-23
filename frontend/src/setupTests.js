@@ -1,8 +1,14 @@
+import { TextEncoder, TextDecoder } from "util";
+globalThis.TextEncoder = TextEncoder;
+globalThis.TextDecoder = TextDecoder;
+
+console.log("TextEncoder is set:", typeof globalThis.TextEncoder);
+
 import "@testing-library/jest-dom";
 import { server } from "./mocks/server";
 import { afterAll, beforeAll, afterEach } from "@jest/globals";
 
-// environment variables for testing
+// Environment variables for testing
 globalThis.importMeta = {
   env: {
     VITE_API_URL: "http://localhost:5452/api",
@@ -11,9 +17,5 @@ globalThis.importMeta = {
 
 // Start the server before all tests
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
-
-// Reset handlers after each test
 afterEach(() => server.resetHandlers());
-
-// Close the server after all tests
 afterAll(() => server.close());
