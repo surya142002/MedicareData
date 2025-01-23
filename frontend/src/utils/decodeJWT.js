@@ -5,7 +5,19 @@
  */
 
 export const decodeJWT = (token) => {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(window.atob(base64));
+    try {
+      // Split the token to get the payload part (second part)
+      const base64Url = token.split(".")[1];
+  
+      // Replace invalid characters for Base64 decoding
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  
+      // Decode Base64 string to JSON
+      const jsonPayload = atob(base64);
+  
+      return JSON.parse(jsonPayload);
+    } catch {
+      throw new Error("Failed to decode JWT token");
+    }
 };
+  
