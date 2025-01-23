@@ -1,34 +1,42 @@
-import { models } from "../test-utils/jest.setup.js"; // Import models from SQLite setup
+import { models } from "../test-utils/jest.setup.js";
 import request from "supertest";
 import app from "../test-utils/serverMock.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-// sqlite now
+// Extract models for easier usage
 const { User, UserActivity } = models;
 
-// Mock bcrypt
+// Mock bcrypt for predictable behavior in tests
 jest.mock("bcrypt", () => ({
-  hash: jest.fn(async () => "$2b$10$hashedpassword"), // Mocked hash
+  hash: jest.fn(async () => "$2b$10$hashedpassword"), // Mock password hash
   compare: jest.fn(async (password, hash) => password === "password"), // Mock password comparison
 }));
 
-// Mock JWT
+// Mock jwt for predictable behavior in tests
 jest.mock("jsonwebtoken", () => ({
-  sign: jest.fn(() => "mocked-jwt-token"), // Mocked JWT sign
-  verify: jest.fn(() => ({ id: "mock-id", role: "user" })), // Mocked JWT verify
+  sign: jest.fn(() => "mocked-jwt-token"), // Mock token generation
+  verify: jest.fn(() => ({ id: "mock-id", role: "user" })), // Mock token verification
 }));
 
-describe("User Controller", () => {
-  beforeEach(async () => {
-    jest.clearAllMocks(); // Reset all mocks
-    await User.truncate({ cascade: true }); // Clear User table
-    await UserActivity.truncate({ cascade: true }); // Clear UserActivity table
-  });
+/**
+ * Normalize IP address to handle "::ffff:" prefix
+ * Doing it when logging
+ * @param {string} ip - The IP address to normalize
+ * @returns {string} - Normalized IP address
+ */
+function normalizeIp(ip) {
+  return ip.startsWith("::ffff:") ? ip.slice(7) : ip; // Remove "::ffff:" prefix if present
+}
 
-  function normalizeIp(ip) {
-    return ip.startsWith("::ffff:") ? ip.slice(7) : ip; // Remove the "::ffff:" prefix if present
-  }
+// User Controller tests
+describe("User Controller", () => {
+  // Clear mocks and database before each test
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    await User.truncate({ cascade: true });
+    await UserActivity.truncate({ cascade: true });
+  });
 
   test("Register a new user successfully", async () => {
     const res = await request(app)
@@ -39,6 +47,7 @@ describe("User Controller", () => {
       })
       .set("X-Forwarded-For", "127.0.0.1"); // Simulate IP address
 
+    // Assertions for the API response
     expect(res.status).toBe(201);
     expect(res.body.message).toBe("User registered successfully");
 
@@ -62,7 +71,7 @@ describe("User Controller", () => {
     // Create a user in the database
     await User.create({
       email: "test@example.com",
-      password_hash: "$2b$10$hashedpassword",
+      password_hash: "$2b$10$hashedpassword", // Mocked hashed password
       role: "user",
     });
 
@@ -71,6 +80,7 @@ describe("User Controller", () => {
       password: "password",
     });
 
+    // Assertions for the API response
     expect(res.status).toBe(400);
     expect(res.body.message).toBe("User already exists.");
   });
@@ -79,7 +89,7 @@ describe("User Controller", () => {
     // Create a user in the database
     const user = await User.create({
       email: "test@example.com",
-      password_hash: "$2b$10$hashedpassword",
+      password_hash: "$2b$10$hashedpassword", // Mocked hashed password
       role: "user",
     });
 
@@ -91,9 +101,10 @@ describe("User Controller", () => {
       })
       .set("X-Forwarded-For", "127.0.0.1"); // Simulate IP address
 
+    // Assertions for the API response
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("token");
-    expect(jwt.sign).toHaveBeenCalled();
+    expect(jwt.sign).toHaveBeenCalled(); // Verify token generation was called
 
     // Verify the user activity was logged
     const activity = await UserActivity.findOne({
@@ -108,15 +119,16 @@ describe("User Controller", () => {
     // Create a user in the database
     await User.create({
       email: "test@example.com",
-      password_hash: "$2b$10$hashedpassword",
+      password_hash: "$2b$10$hashedpassword", // Mocked hashed password
       role: "user",
     });
 
     const res = await request(app).post("/api/auth/login").send({
       email: "test@example.com",
-      password: "wrongpassword",
+      password: "wrongpassword", // Incorrect password
     });
 
+    // Assertions for the API response
     expect(res.status).toBe(401);
     expect(res.body.message).toBe("Invalid email or password");
   });
@@ -124,12 +136,13 @@ describe("User Controller", () => {
   test("Validate token successfully", async () => {
     const res = await request(app)
       .get("/api/auth/validate")
-      .set("Authorization", "Bearer mocked-jwt-token");
+      .set("Authorization", "Bearer mocked-jwt-token"); // Mock token
 
+    // Assertions for the API response
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
       valid: true,
-      user: { id: "mock-id", role: "user" },
+      user: { id: "mock-id", role: "user" }, // Mocked token payload
     });
   });
 });
