@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-
 import React from "react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
@@ -19,12 +18,14 @@ describe("AnalyticsPage Component", () => {
     api.get.mockClear();
   });
 
-  test("renders the Analytics Dashboard with sections", () => {
-    render(
-      <BrowserRouter>
-        <AnalyticsPage />
-      </BrowserRouter>
-    );
+  test("renders the Analytics Dashboard with sections", async () => {
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <AnalyticsPage />
+        </BrowserRouter>
+      );
+    });
 
     expect(screen.getByRole("heading", { name: /analytics dashboard/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /user activity/i })).toBeInTheDocument();
@@ -48,11 +49,13 @@ describe("AnalyticsPage Component", () => {
       },
     });
 
-    render(
-      <BrowserRouter>
-        <AnalyticsPage />
-      </BrowserRouter>
-    );
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <AnalyticsPage />
+        </BrowserRouter>
+      );
+    });
 
     await waitFor(() =>
       expect(screen.getByText("user1@example.com")).toBeInTheDocument()
@@ -60,49 +63,45 @@ describe("AnalyticsPage Component", () => {
     expect(screen.getByText("User logged in")).toBeInTheDocument();
     expect(screen.getByText("192.168.0.1")).toBeInTheDocument();
   });
-    
 
   test("displays an error message if user activity data fails to load", async () => {
     api.get.mockRejectedValueOnce({
-      response: {
-        data: "Mocked error message",
-      },
+      response: { data: { message: "Failed to fetch user activity" } },
     });
 
-    render(
-      <BrowserRouter>
-        <AnalyticsPage />
-      </BrowserRouter>
-    );
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <AnalyticsPage />
+        </BrowserRouter>
+      );
+    });
 
     await waitFor(() =>
-      expect(
-        screen.getByText(/failed to fetch user activity/i)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/failed to fetch user activity/i)).toBeInTheDocument()
     );
   });
 
   test("displays an error message if dataset usage data fails to load", async () => {
     api.get.mockRejectedValueOnce({
-      response: {
-        data: "Mocked error message",
-      },
+      response: { data: { message: "Failed to fetch dataset usage" } },
     });
 
-    render(
-      <BrowserRouter>
-        <AnalyticsPage />
-      </BrowserRouter>
-    );
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <AnalyticsPage />
+        </BrowserRouter>
+      );
+    });
 
     await waitFor(() =>
-      expect(
-        screen.getByText(/failed to fetch dataset usage/i)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/failed to fetch dataset usage/i)).toBeInTheDocument()
     );
   });
 
   test("handles pagination for user activity", async () => {
+    // Page 1
     api.get.mockResolvedValueOnce({
       data: {
         data: [
@@ -119,16 +118,19 @@ describe("AnalyticsPage Component", () => {
       },
     });
 
-    render(
-      <BrowserRouter>
-        <AnalyticsPage />
-      </BrowserRouter>
-    );
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <AnalyticsPage />
+        </BrowserRouter>
+      );
+    });
 
     await waitFor(() =>
       expect(screen.getByText("user1@example.com")).toBeInTheDocument()
     );
 
+    // Page 2
     api.get.mockResolvedValueOnce({
       data: {
         data: [

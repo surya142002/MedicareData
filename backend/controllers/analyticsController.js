@@ -77,12 +77,10 @@ export const getUserActivity = async (req, res) => {
     res.json(formattedLogs);
   } catch (error) {
     console.error("Error fetching user activity logs:", error.message);
-    res
-      .status(500)
-      .json({
-        message: "Failed to fetch user activity logs",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Failed to fetch user activity logs",
+      error: error.message,
+    });
   }
 };
 
@@ -153,15 +151,13 @@ export const getDatasetUsage = async (req, res) => {
     }));
 
     // Log and send the formatted logs
-    console.log("Dataset Usage Logs:", formattedLogs);
+    // console.log("Dataset Usage Logs:", formattedLogs);
     res.json(formattedLogs);
   } catch (error) {
     console.error("Error fetching dataset usage logs:", error.message);
-    res
-      .status(500)
-      .json({
-        message: "Failed to fetch dataset usage logs",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Failed to fetch dataset usage logs",
+      error: error.message,
+    });
   }
 };
