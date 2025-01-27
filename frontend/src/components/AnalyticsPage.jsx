@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
 
 const AnalyticsPage = () => {
     // Define state variables for user activity and dataset usage
@@ -10,29 +10,33 @@ const AnalyticsPage = () => {
     const [datasetUsagePage, setDatasetUsagePage] = useState(1);
     const [userActivityTotalPages, setUserActivityTotalPages] = useState(0);
     const [datasetUsageTotalPages, setDatasetUsageTotalPages] = useState(0);
+    const [userActivityError, setUserActivityError] = useState(null);
+    const [datasetUsageError, setDatasetUsageError] = useState(null);
     const navigate = useNavigate();
 
     // Fetch user activity logs from the backend with pagination
     const fetchUserActivity = async (page) => {
         try {
-            // Fetch user activity data from the API
             const response = await api.get(`/analytics/user-activity?page=${page}&limit=10`);
             setUserActivity(response.data.data);
             setUserActivityTotalPages(response.data.totalPages);
+            setUserActivityError(null); // Clear any previous errors
         } catch (error) {
-            console.error('Failed to fetch user activity:', error.response?.data || error.message);
+            console.error("Failed to fetch user activity:", error.response?.data || error.message);
+            setUserActivityError("Failed to fetch user activity. Please try again.");
         }
     };
 
     // Fetch dataset usage logs from the backend with pagination
     const fetchDatasetUsage = async (page) => {
         try {
-            // Fetch dataset usage data from the API
             const response = await api.get(`/analytics/dataset-usage?page=${page}&limit=10`);
             setDatasetUsage(response.data.data);
             setDatasetUsageTotalPages(response.data.totalPages);
+            setDatasetUsageError(null); // Clear any previous errors
         } catch (error) {
-            console.error('Failed to fetch dataset usage:', error.response?.data || error.message);
+            console.error("Failed to fetch dataset usage:", error.response?.data || error.message);
+            setDatasetUsageError("Failed to fetch dataset usage. Please try again.");
         }
     };
 
@@ -44,10 +48,10 @@ const AnalyticsPage = () => {
 
     // Handle page change for user activity and dataset usage
     const handlePageChange = (type, newPage) => {
-        if (type === 'userActivity' && newPage > 0 && newPage <= userActivityTotalPages) {
+        if (type === "userActivity" && newPage > 0 && newPage <= userActivityTotalPages) {
             setUserActivityPage(newPage);
         }
-        if (type === 'datasetUsage' && newPage > 0 && newPage <= datasetUsageTotalPages) {
+        if (type === "datasetUsage" && newPage > 0 && newPage <= datasetUsageTotalPages) {
             setDatasetUsagePage(newPage);
         }
     };
@@ -55,14 +59,14 @@ const AnalyticsPage = () => {
     // Render the analytics page
     return (
         <div className="analytics-page">
-            {/* Navigate back to datasets page */}
-            <button className="back-button" onClick={() => navigate('/datasets')}>Back</button>
+            <button className="back-button" onClick={() => navigate("/datasets")}>Back</button>
             <h1 className="page-title">Analytics Dashboard</h1>
 
-            {/* Render user activity and dataset usage sections */}
             <div className="analytics-section">
                 <h2 className="header-title">User Activity</h2>
-                {userActivity.length > 0 ? (
+                {userActivityError ? (
+                    <p className="error-message">{userActivityError}</p>
+                ) : userActivity.length > 0 ? (
                     <>
                         <table className="analytics-table">
                             <thead>
@@ -88,14 +92,14 @@ const AnalyticsPage = () => {
                         </table>
                         <div className="pagination">
                             <button
-                                onClick={() => handlePageChange('userActivity', userActivityPage - 1)}
+                                onClick={() => handlePageChange("userActivity", userActivityPage - 1)}
                                 disabled={userActivityPage === 1}
                             >
                                 Previous
                             </button>
                             <span>Page {userActivityPage} of {userActivityTotalPages}</span>
                             <button
-                                onClick={() => handlePageChange('userActivity', userActivityPage + 1)}
+                                onClick={() => handlePageChange("userActivity", userActivityPage + 1)}
                                 disabled={userActivityPage === userActivityTotalPages}
                             >
                                 Next
@@ -106,10 +110,12 @@ const AnalyticsPage = () => {
                     <p className="status-message">No user activity found.</p>
                 )}
             </div>
-            {/* Dataset Usage Section */}
+
             <div className="analytics-section">
                 <h2 className="header-title">Dataset Usage</h2>
-                {datasetUsage.length > 0 ? (
+                {datasetUsageError ? (
+                    <p className="error-message">{datasetUsageError}</p>
+                ) : datasetUsage.length > 0 ? (
                     <>
                         <table className="analytics-table">
                             <thead>
@@ -125,7 +131,7 @@ const AnalyticsPage = () => {
                                     <tr key={usage.id || index}>
                                         <td>{usage.datasetName}</td>
                                         <td>{usage.actionType}</td>
-                                        <td>{usage.searchTerm || 'N/A'}</td>
+                                        <td>{usage.searchTerm || "N/A"}</td>
                                         <td>{new Date(usage.timestamp).toLocaleString()}</td>
                                     </tr>
                                 ))}
@@ -133,14 +139,14 @@ const AnalyticsPage = () => {
                         </table>
                         <div className="pagination">
                             <button
-                                onClick={() => handlePageChange('datasetUsage', datasetUsagePage - 1)}
+                                onClick={() => handlePageChange("datasetUsage", datasetUsagePage - 1)}
                                 disabled={datasetUsagePage === 1}
                             >
                                 Previous
                             </button>
                             <span>Page {datasetUsagePage} of {datasetUsageTotalPages}</span>
                             <button
-                                onClick={() => handlePageChange('datasetUsage', datasetUsagePage + 1)}
+                                onClick={() => handlePageChange("datasetUsage", datasetUsagePage + 1)}
                                 disabled={datasetUsagePage === datasetUsageTotalPages}
                             >
                                 Next
