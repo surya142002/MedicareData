@@ -11,12 +11,17 @@ const router = express.Router();
 // Fetch user activity logs with pagination
 router.get("/user-activity", verifyToken, isAdmin, async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 items per page
+    const { page = 1, limit = 10 } = req.query;
     const offset = (page - 1) * limit;
 
-    // Fetch user activity logs with user email
     const logs = await UserActivity.findAndCountAll({
-      attributes: ["action_type", "action_details", "timestamp", "ip_address"],
+      attributes: [
+        "id",
+        "action_type",
+        "action_details",
+        "timestamp",
+        "ip_address",
+      ],
       include: [
         {
           model: User,
@@ -29,27 +34,22 @@ router.get("/user-activity", verifyToken, isAdmin, async (req, res) => {
       offset: parseInt(offset, 10),
     });
 
-    // Return paginated user activity logs
     res.json({
       total: logs.count,
       totalPages: Math.ceil(logs.count / limit),
       currentPage: parseInt(page, 10),
       data: logs.rows.map((log) => ({
+        id: log.id,
+        userEmail: log.user?.email || "Unknown",
         actionType: log.action_type,
         actionDetails: log.action_details,
         timestamp: log.timestamp,
         ipAddress: log.ip_address,
-        userEmail: log.user?.email || "Unknown",
       })),
     });
   } catch (error) {
     console.error("Error fetching user activity logs:", error.message);
-    res
-      .status(500)
-      .json({
-        message: "Failed to fetch user activity logs",
-        error: error.message,
-      });
+    res.status(500).json({ message: "Failed to fetch user activity" });
   }
 });
 
@@ -59,9 +59,14 @@ router.get("/dataset-usage", verifyToken, isAdmin, async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     const offset = (page - 1) * limit;
 
-    // Fetch dataset usage statistics with dataset name
     const usage = await DatasetUsage.findAndCountAll({
-      attributes: ["action_type", "search_term", "usage_count", "timestamp"],
+      attributes: [
+        "id",
+        "action_type",
+        "search_term",
+        "usage_count",
+        "timestamp",
+      ],
       include: [
         {
           model: Datasets,
@@ -74,12 +79,12 @@ router.get("/dataset-usage", verifyToken, isAdmin, async (req, res) => {
       offset: parseInt(offset, 10),
     });
 
-    // Return paginated dataset usage statistics
     res.json({
       total: usage.count,
       totalPages: Math.ceil(usage.count / limit),
       currentPage: parseInt(page, 10),
       data: usage.rows.map((record) => ({
+        id: record.id,
         datasetName: record.dataset?.name || "Unknown",
         actionType: record.action_type,
         searchTerm: record.search_term,
@@ -88,10 +93,8 @@ router.get("/dataset-usage", verifyToken, isAdmin, async (req, res) => {
       })),
     });
   } catch (error) {
-    console.error("Error fetching dataset usage:", error.message);
-    res
-      .status(500)
-      .json({ message: "Failed to fetch dataset usage", error: error.message });
+    console.error("Error fetching dataset usage logs:", error.message);
+    res.status(500).json({ message: "Failed to fetch dataset usage" });
   }
 });
 
