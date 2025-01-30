@@ -39,5 +39,5 @@ app.use("/api/datasets", datasetRoutes);
 app.use("/api/analytics", analyticsRoutes); // Add analytics routes
 
 // Start server
-const PORT = process.env.PORT || 5452;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
