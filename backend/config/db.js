@@ -1,17 +1,26 @@
 import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
 
-// Initialize Sequelize instance
-// This creates a connection to the PostgreSQL database with the specified configurations.
+// Load environment variables
+dotenv.config();
+
+// Initialize Sequelize with Heroku PostgreSQL connection
 const sequelize = new Sequelize(
-  "medidatabase",
-  process.env.DB_USER,
-  process.env.DB_PASS,
+  process.env.DB_NAME, // Database name from env
+  process.env.DB_USER, // Database user from env
+  process.env.DB_PASS, // Database password from env
   {
-    host: process.env.DB_HOST,
-    dialect: "postgres",
+    host: process.env.DB_HOST, // Heroku database host
+    dialect: process.env.DB_DIALECT || "postgres", // Default to PostgreSQL
+    port: process.env.DB_PORT || 5432, // Default port
+    dialectOptions: {
+      ssl: {
+        require: true, // Heroku Postgres requires SSL
+        rejectUnauthorized: false, // Allow self-signed certificates
+      },
+    },
+    logging: false, // Turn off logging in production
   }
 );
 
-// Export the Sequelize instance for use in other parts of the application
-// This instance is used to define and interact with database models.
 export default sequelize;
