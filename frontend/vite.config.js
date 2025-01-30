@@ -4,16 +4,15 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    historyApiFallback: true,
     port: 5173, // Default Vite port
     proxy: {
       "/api": {
-        target: "http://localhost:5452", // Backend URL
+        target: "http://localhost:5452", // Local backend URL
         changeOrigin: true,
       },
     },
-    hmr: {
-      clientPort: 5173,
-    },
+  },
+  build: {
+    outDir: "dist",
   },
 });
