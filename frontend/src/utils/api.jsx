@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+console.log("Using API URL:", import.meta.env.VITE_API_URL); // Debugging log
 // Create an Axios instance for API requests with a base URL.
 // The base URL is retrieved from environment variables or defaults to localhost.
 const api = axios.create({
