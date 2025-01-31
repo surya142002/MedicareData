@@ -33,6 +33,12 @@ app.use(
 );
 app.use(bodyParser.json());
 
+// Serve frontend build files
+const frontendBuildPath = path.join(process.cwd(), "../frontend/dist");
+if (fs.existsSync(frontendBuildPath)) {
+  app.use(express.static(frontendBuildPath));
+}
+
 // Initialize models
 const models = initModels(sequelize);
 
@@ -52,6 +58,11 @@ sequelize
 app.use("/api/auth", userRoutes);
 app.use("/api/datasets", datasetRoutes);
 app.use("/api/analytics", analyticsRoutes); // Add analytics routes
+
+// ✅ Fix for React Router Refresh Issue
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(frontendBuildPath, "index.html"));
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
