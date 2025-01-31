@@ -15,24 +15,41 @@ import { Op } from "sequelize";
  */
 export const uploadDataset = async (req, res) => {
   try {
-    //console.log('Request Body:', req.body);
-    //console.log('Uploaded File:', req.file);
-
-    // Extract dataset details from request body
-    const { name, description, datasetType } = req.body;
+    console.log("Received dataset upload request.");
+    console.log("Request Body:", req.body);
 
     // Validate file upload
     if (!req.file) {
-      //console.log('No file uploaded in request.');
+      console.error("No file received in the request.");
       return res.status(400).json({ message: "File is required." });
     }
+
+    console.log("Uploaded File:", req.file);
+    console.log("Checking if file exists:", req.file.path);
+
+    // Ensure the file actually exists before processing
+    if (!fs.existsSync(req.file.path)) {
+      console.error("ERROR: Uploaded file not found!");
+      return res
+        .status(500)
+        .json({ message: "Uploaded file not found on server." });
+    } else {
+      console.log("File successfully saved:", req.file.path);
+    }
+
+    // Extract dataset details from request body
+    const { name, description, datasetType } = req.body;
 
     // Process the uploaded file
     const inputFile = req.file.path;
     const cleanedFile = `${inputFile}_cleaned.txt`;
 
+    console.log(`Processing file: ${inputFile}`);
+
     // Standardize and filter the data
     await standardizeAndFilter(inputFile, cleanedFile);
+
+    console.log("File cleaned successfully:", cleanedFile);
 
     // Create a new dataset record
     const dataset = await Datasets.create({
@@ -42,19 +59,23 @@ export const uploadDataset = async (req, res) => {
       uploaded_by: req.user.id,
     });
 
+    console.log(`Dataset created in DB: ${dataset.id}`);
+
     // Log dataset upload
     await logDatasetUsage(dataset.id, "upload", null, req.user.id);
 
     // Read the cleaned file and parse the data
+    console.log(`Reading cleaned file: ${cleanedFile}`);
     const fileContent = fs.readFileSync(cleanedFile, "utf-8");
     const rows = fileContent.split("\n").map((line) => line.split("\t"));
     const parsedRows = parseDataset(datasetType, rows);
+
+    console.log(`Parsed ${parsedRows.length} entries from file.`);
 
     // Insert the parsed data into the database
     const failedEntries = [];
     for (const row of parsedRows) {
       try {
-        // Insert each row as a new entry
         await DatasetEntries.create({
           dataset_id: dataset.id,
           data: row,
@@ -66,7 +87,7 @@ export const uploadDataset = async (req, res) => {
 
     // Log failed entries
     if (failedEntries.length > 0) {
-      console.error(`Failed to insert ${failedEntries.length} entries:`);
+      console.error(`Failed to insert ${failedEntries.length} entries.`);
       failedEntries.forEach((failed) =>
         console.error(
           `Entry: ${JSON.stringify(failed.row)}, Error: ${failed.error}`
@@ -194,11 +215,9 @@ export const getDatasetEntries = async (req, res) => {
       `Error fetching dataset entries (Dataset ID: ${datasetId}):`,
       error.message
     );
-    res
-      .status(500)
-      .json({
-        message: "Failed to fetch dataset entries",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Failed to fetch dataset entries",
+      error: error.message,
+    });
   }
 };
