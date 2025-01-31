@@ -27,77 +27,86 @@ export const uploadDataset = async (req, res) => {
     console.log("Uploaded File:", req.file);
     console.log("Checking if file exists:", req.file.path);
 
-    // Ensure the file actually exists before processing
     if (!fs.existsSync(req.file.path)) {
       console.error("ERROR: Uploaded file not found!");
       return res
         .status(500)
         .json({ message: "Uploaded file not found on server." });
-    } else {
-      console.log("File successfully saved:", req.file.path);
     }
 
     // Extract dataset details from request body
     const { name, description, datasetType } = req.body;
 
-    // Process the uploaded file
-    const inputFile = req.file.path;
-    const cleanedFile = `${inputFile}_cleaned.txt`;
+    // Respond immediately to prevent timeout
+    res
+      .status(202)
+      .json({ message: "Dataset upload started", filename: req.file.filename });
 
-    console.log(`Processing file: ${inputFile}`);
+    console.log("Upload request acknowledged, processing in background...");
 
-    // Standardize and filter the data
-    await standardizeAndFilter(inputFile, cleanedFile);
-
-    console.log("File cleaned successfully:", cleanedFile);
-
-    // Create a new dataset record
-    const dataset = await Datasets.create({
-      name,
-      description,
-      type: datasetType,
-      uploaded_by: req.user.id,
-    });
-
-    console.log(`Dataset created in DB: ${dataset.id}`);
-
-    // Log dataset upload
-    await logDatasetUsage(dataset.id, "upload", null, req.user.id);
-
-    // Read the cleaned file and parse the data
-    console.log(`Reading cleaned file: ${cleanedFile}`);
-    const fileContent = fs.readFileSync(cleanedFile, "utf-8");
-    const rows = fileContent.split("\n").map((line) => line.split("\t"));
-    const parsedRows = parseDataset(datasetType, rows);
-
-    console.log(`Parsed ${parsedRows.length} entries from file.`);
-
-    // Insert the parsed data into the database
-    const failedEntries = [];
-    for (const row of parsedRows) {
+    // Use setImmediate to process the file asynchronously
+    setImmediate(async () => {
       try {
-        await DatasetEntries.create({
-          dataset_id: dataset.id,
-          data: row,
+        const inputFile = req.file.path;
+        const cleanedFile = `${inputFile}_cleaned.txt`;
+
+        console.log(`Processing file: ${inputFile}`);
+
+        // Standardize and filter the data
+        await standardizeAndFilter(inputFile, cleanedFile);
+        console.log("File cleaned successfully:", cleanedFile);
+
+        // Create a new dataset record
+        const dataset = await Datasets.create({
+          name,
+          description,
+          type: datasetType,
+          uploaded_by: req.user.id,
         });
+
+        console.log(`Dataset created in DB: ${dataset.id}`);
+
+        // Log dataset upload
+        await logDatasetUsage(dataset.id, "upload", null, req.user.id);
+
+        // Read the cleaned file and parse the data
+        console.log(`Reading cleaned file: ${cleanedFile}`);
+        const fileContent = fs.readFileSync(cleanedFile, "utf-8");
+        const rows = fileContent.split("\n").map((line) => line.split("\t"));
+        const parsedRows = parseDataset(datasetType, rows);
+
+        console.log(`Parsed ${parsedRows.length} entries from file.`);
+
+        // Insert the parsed data into the database
+        const failedEntries = [];
+        for (const row of parsedRows) {
+          try {
+            await DatasetEntries.create({
+              dataset_id: dataset.id,
+              data: row,
+            });
+          } catch (error) {
+            failedEntries.push({ row, error: error.message });
+          }
+        }
+
+        // Log failed entries
+        if (failedEntries.length > 0) {
+          console.error(`Failed to insert ${failedEntries.length} entries.`);
+          failedEntries.forEach((failed) =>
+            console.error(
+              `Entry: ${JSON.stringify(failed.row)}, Error: ${failed.error}`
+            )
+          );
+        }
+
+        console.log("Dataset processing completed!");
       } catch (error) {
-        failedEntries.push({ row, error: error.message });
+        console.error("Error processing dataset in background:", error);
       }
-    }
-
-    // Log failed entries
-    if (failedEntries.length > 0) {
-      console.error(`Failed to insert ${failedEntries.length} entries.`);
-      failedEntries.forEach((failed) =>
-        console.error(
-          `Entry: ${JSON.stringify(failed.row)}, Error: ${failed.error}`
-        )
-      );
-    }
-
-    res.status(201).json({ message: "Dataset uploaded successfully", dataset });
+    });
   } catch (error) {
-    console.error("Error uploading dataset:", error);
+    console.error("Error handling dataset upload:", error);
     res
       .status(500)
       .json({ message: "Failed to upload dataset", error: error.message });
