@@ -15,5 +15,5 @@ export default defineConfig({
   build: {
     outDir: "dist",
   },
-  base: "/", // Ensure correct base path
+  base: "/", // Ensure Vite builds with the correct base path
 });
