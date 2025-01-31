@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 import sequelize from "./config/db.js";
 import initModels from "./models/initModels.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -10,6 +12,14 @@ import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 // Load environment variables
 dotenv.config();
+
+const uploadDir = path.join(process.cwd(), "uploads");
+
+// Ensure 'uploads/' directory exists at startup
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log("✅ Created 'uploads/' directory");
+}
 
 // Initialize express app
 const app = express();

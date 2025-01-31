@@ -7,10 +7,20 @@ import multer from "multer";
  */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Ensure the 'uploads' directory exists
+    const uploadDir = "uploads/";
+
+    // Ensure uploads folder exists
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+      console.log("✅ Created 'uploads/' directory in middleware");
+    }
+
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}_${file.originalname}`);
+    const fileName = `${Date.now()}_${file.originalname}`;
+    console.log("Generated filename:", fileName);
+    cb(null, fileName);
   },
 });
 
