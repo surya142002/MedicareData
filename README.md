@@ -1,55 +1,103 @@
 # Medicare Data Viewer
 
-A web application designed to make browsing and searching Medicare public datasets (like ICD-10-CM, HCPCS, etc.) intuitive and efficient. This platform provides user registration, secure login, dataset browsing with pagination, basic and advanced search, and admin functionalities for dataset uploads and analytics.
+**Medicare Data Viewer** is a web application designed to make browsing and searching **Medicare public datasets** (such as **ICD-10-CM, HCPCS**) more accessible and efficient. The platform provides **secure user authentication**, **dataset browsing with pagination**, **basic search functionality**, and **admin tools** for managing datasets and tracking analytics.
 
----
+## 🚀 Features
 
-## Features
+### ✅ User Features
 
-### User Features
-
-- **Registration/Login**: Secure user authentication using JWT and bcrypt.
-- **Dataset Browsing**: View datasets in a paginated UI.
+- **Secure Authentication**: Users can register and log in using **JWT-based authentication** with **bcrypt-hashed passwords**.
+- **Dataset Browsing**: View and navigate datasets with **paginated results**.
 - **Search Functionality**:
-  - Basic Search: Search by code or description.
-  - Advanced Search: LLM-powered for typo handling, synonyms, and word reordering (planned).
+  - **Basic Search**: Search by **code** or **description**.
+  - **Advanced Search** _(Planned)_: Uses **LLM-powered search** to handle **typos, synonyms, and word order variations**.
 
-### Admin Features
+### 🔧 Admin Features
 
-- **Dataset Upload**: Upload new datasets via a user-friendly interface.
-- **Dataset Delete**: Delete datasets via a user-friendly interface.
-- **Analytics Dashboard**: View user activity and dataset usage statistics.
+- **Dataset Management**:
+  - Upload new datasets through a **user-friendly UI**.
+  - Delete outdated datasets securely.
+- **Usage Analytics**:
+  - Track user activity and dataset interactions.
+  - View **dataset search trends** and **user login statistics**.
 
-### Scalability & Security
+### 🛡️ Scalability & Security
 
-- Secure authentication and role-based access control.
-- Efficient handling of large datasets with optimized queries and indexing.
+- **Role-Based Access Control (RBAC)**: Restrict admin-only functionalities.
+- **Optimized Database Queries**: Efficient indexing ensures **fast dataset retrieval**.
+- **Secure Communication**: Data is encrypted and transferred over **HTTPS**.
 
 ---
 
-## Technology Stack
+## 🏗️ Technology Stack
 
-### Frontend
+### 🌐 **Frontend**
 
-- **Framework**: React.js
-- **Styling**: Custom CSS
+- **Framework**: [React.js](https://reactjs.org/)
+- **Styling**: Custom **CSS**
 - **State Management**: React Hooks
-- **API Communication**: Axios
+- **API Communication**: [Axios](https://axios-http.com/)
 
-### Backend
+### ⚙️ **Backend**
 
-- **Framework**: Node.js with Express
-- **Database**: PostgreSQL
+- **Framework**: [Node.js](https://nodejs.org/) with [Express.js](https://expressjs.com/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **Authentication**: JWT and bcrypt
-- **File Uploads**: Multer (local)
+- **File Uploads**: Multer for handling dataset uploads
 
-### Additional Tools
+### 🔍 **Search Engine**
 
-- **Search**: Elasticsearch (for advanced search, planned)
-- **Hosting**: TBD (e.g., Netlify/Vercel for frontend, Heroku/AWS for backend, planned)
+- **Basic Search**: SQL-based querying
+- **Advanced Search (Planned)**: [Elasticsearch](https://www.elastic.co/) for more powerful indexing
+
+### ☁️ **Hosting**
+
+- **Frontend**: [Vercel](https://vercel.com/)
+- **Backend**: [Heroku](https://www.heroku.com/)
+- **Database**: Heroku PostgreSQL
 
 ---
 
-## License
+## 🔬 Testing
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+### **Backend Tests**
+
+Run unit tests with:
+
+```sh
+cd backend
+npm test
+```
+
+### **Frontend Tests**
+
+Run unit tests with:
+
+```sh
+cd frontend
+npm test
+```
+
+---
+
+## 📅 Roadmap
+
+### **✅ MVP Features**
+
+✔️ User Registration & Login  
+✔️ Dataset Browsing & Pagination  
+✔️ Basic Search (ICD-10-CM & HCPCS)  
+✔️ Admin Dataset Upload & Deletion  
+✔️ Analytics Dashboard
+
+### **⏳ In Progress**
+
+🔄 UI/UX Improvements  
+🔄 Performance Optimization
+
+### **🚀 Future Enhancements**
+
+🔹 **Advanced Search** (LLM-powered typo correction, synonyms, etc.)  
+🔹 **Mobile App** (React Native)  
+🔹 **Predictive Analytics** for search trends  
+🔹 **User Feedback Mechanisms**
