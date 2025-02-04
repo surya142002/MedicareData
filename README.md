@@ -2,6 +2,8 @@
 
 **Medicare Data Viewer** is a web application designed to make browsing and searching **Medicare public datasets** (such as **ICD-10-CM, HCPCS**) more accessible and efficient. The platform provides **secure user authentication**, **dataset browsing with pagination**, **basic search functionality**, and **admin tools** for managing datasets and tracking analytics.
 
+🚀 **[View Live Website](https://medicaredata.vercel.app/login)** 
+
 ## Features
 
 ### User Features
