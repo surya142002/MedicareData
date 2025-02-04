@@ -2,9 +2,9 @@
 
 **Medicare Data Viewer** is a web application designed to make browsing and searching **Medicare public datasets** (such as **ICD-10-CM, HCPCS**) more accessible and efficient. The platform provides **secure user authentication**, **dataset browsing with pagination**, **basic search functionality**, and **admin tools** for managing datasets and tracking analytics.
 
-## 🚀 Features
+## Features
 
-### ✅ User Features
+### User Features
 
 - **Secure Authentication**: Users can register and log in using **JWT-based authentication** with **bcrypt-hashed passwords**.
 - **Dataset Browsing**: View and navigate datasets with **paginated results**.
@@ -12,7 +12,7 @@
   - **Basic Search**: Search by **code** or **description**.
   - **Advanced Search** _(Planned)_: Uses **LLM-powered search** to handle **typos, synonyms, and word order variations**.
 
-### 🔧 Admin Features
+### Admin Features
 
 - **Dataset Management**:
   - Upload new datasets through a **user-friendly UI**.
@@ -21,7 +21,7 @@
   - Track user activity and dataset interactions.
   - View **dataset search trends** and **user login statistics**.
 
-### 🛡️ Scalability & Security
+### Scalability & Security
 
 - **Role-Based Access Control (RBAC)**: Restrict admin-only functionalities.
 - **Optimized Database Queries**: Efficient indexing ensures **fast dataset retrieval**.
@@ -29,28 +29,28 @@
 
 ---
 
-## 🏗️ Technology Stack
+## Technology Stack
 
-### 🌐 **Frontend**
+### **Frontend**
 
 - **Framework**: [React.js](https://reactjs.org/)
 - **Styling**: Custom **CSS**
 - **State Management**: React Hooks
 - **API Communication**: [Axios](https://axios-http.com/)
 
-### ⚙️ **Backend**
+### **Backend**
 
 - **Framework**: [Node.js](https://nodejs.org/) with [Express.js](https://expressjs.com/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **Authentication**: JWT and bcrypt
 - **File Uploads**: Multer for handling dataset uploads
 
-### 🔍 **Search Engine**
+### **Search Engine**
 
 - **Basic Search**: SQL-based querying
 - **Advanced Search (Planned)**: [Elasticsearch](https://www.elastic.co/) for more powerful indexing
 
-### ☁️ **Hosting**
+### **Hosting**
 
 - **Frontend**: [Vercel](https://vercel.com/)
 - **Backend**: [Heroku](https://www.heroku.com/)
@@ -58,7 +58,7 @@
 
 ---
 
-## 🔬 Testing
+## Testing
 
 ### **Backend Tests**
 
@@ -80,7 +80,7 @@ npm test
 
 ---
 
-## 📅 Roadmap
+## Roadmap
 
 ### **✅ MVP Features**
 
