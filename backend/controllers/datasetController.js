@@ -17,6 +17,7 @@ export const uploadDataset = async (req, res) => {
   try {
     console.log("Received dataset upload request.");
     console.log("Request Body:", req.body);
+    console.log("Uploaded File:", req.file || "No file received!");
 
     // Validate file upload
     if (!req.file) {

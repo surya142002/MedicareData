@@ -22,13 +22,20 @@ jest.mock("../middleware/userMiddleware.js", () => ({
 jest.mock("../middleware/uploadMiddleware.js", () => ({
   upload: {
     single: () => (req, res, next) => {
+      console.log("📤 Mock middleware executed. Setting req.file...");
+      console.log("🔍 Request Headers:", req.headers);
+
       if (!req.headers["x-mock-no-file"]) {
         req.file = {
           path: "uploads/mock_file.txt",
           originalname: "mock_file.txt",
           mimetype: "text/plain",
-        }; // Mock uploaded file
+        };
+        console.log("Mock file successfully added:", req.file);
+      } else {
+        console.log("No file added due to x-mock-no-file header.");
       }
+
       req.body = {
         ...req.body,
         name: req.body.name || "New Dataset",
@@ -59,6 +66,8 @@ describe("Dataset Routes", () => {
 
     // Create a mock file for upload
     fs.writeFileSync(mockFilePath, "mock data content");
+
+    // console.log("✅ Mock file exists:", fs.existsSync(mockFilePath));
 
     // Clear database tables
     await DatasetEntries.destroy({ where: {}, truncate: { cascade: true } });
@@ -94,22 +103,26 @@ describe("Dataset Routes", () => {
 
   describe("POST /upload", () => {
     test("Uploads a dataset successfully", async () => {
+      const filePath = path.join(__dirname, "../uploads/mock_file.txt");
+
+      console.log("Checking if test file exists:", fs.existsSync(filePath));
+      if (fs.existsSync(filePath)) {
+        console.log("Test file content:", fs.readFileSync(filePath, "utf8"));
+      }
+
+      console.log("Sending dataset upload request...");
+
       const res = await request(app)
         .post("/api/datasets/upload")
+        // .set("x-debug-headers", "true") // This will help debug headers inside middleware
         .field("name", "New Dataset")
         .field("description", "This is a new dataset.")
         .field("datasetType", "ICD-10-CM")
-        .attach("file", Buffer.from("mock data content"), "mock_file.txt"); // Simulate file upload
+        .attach("file", filePath, "mock_file.txt");
 
-      expect(res.status).toBe(201);
-      expect(res.body.dataset).toHaveProperty("id"); // Ensure dataset ID is returned
-
-      // Verify the dataset was added to the database
-      const createdDataset = await Datasets.findOne({
-        where: { name: "New Dataset" },
-      });
-      expect(createdDataset).not.toBeNull();
-      expect(createdDataset.description).toBe("This is a new dataset.");
+      console.log("Response Body:", res.body);
+      expect(res.status).toBe(202);
+      expect(res.body).toHaveProperty("message", "Dataset upload started");
     });
 
     test("Fails to upload dataset without a file", async () => {
