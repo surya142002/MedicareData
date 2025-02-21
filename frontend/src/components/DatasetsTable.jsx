@@ -1,15 +1,14 @@
-import React from "react";
-import { useState, useEffect } from 'react';
-import api from '../utils/api';
+import React, { useState, useEffect } from "react";
+import api from "../utils/api";
 
 const DatasetTable = ({ datasetId, datasetName }) => {
   // State variables
   const [entries, setEntries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
 
   // Fetch dataset entries from the backend
-  const fetchEntries = async (page = 1, search = '') => {
+  const fetchEntries = async (page = 1, search = "") => {
     try {
       // Fetch entries from the API
       const response = await api.get(`/datasets/${datasetId}/entries`, {
@@ -22,17 +21,17 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         totalPages: response.data.totalPages,
       });
     } catch (error) {
-      console.error('Error fetching dataset entries:', error);
+      console.error("Error fetching dataset entries:", error);
     }
   };
 
   // Reset search bar and fetch entries when datasetId changes
   useEffect(() => {
-    setSearchTerm(''); // Reset the search term
+    setSearchTerm(""); // Reset the search term
     fetchEntries(); // Fetch entries for the new dataset
   }, [datasetId]);
 
-  // searchbar handler
+  // Search bar handler
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
@@ -44,7 +43,12 @@ const DatasetTable = ({ datasetId, datasetName }) => {
     fetchEntries(newPage, searchTerm); // Fetch new page data
   };
 
-  // Render the component
+  // Extract headers dynamically from the dataset entries
+  const getHeaders = () => {
+    if (entries.length === 0) return [];
+    return Object.keys(entries[0].data);
+  };
+
   return (
     <div className="dataset-container">
       {/* Dataset name */}
@@ -56,23 +60,29 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         onChange={handleSearch}
         className="search-bar"
       />
-      {/* Dataset table */}
-      <table className="dataset-table">
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.map((entry) => (
-            <tr key={entry.id}>
-              <td>{entry.data.code}</td>
-              <td>{entry.data.description}</td>
+      
+      {/* Scrollable table container */}
+      <div className="table-container">
+        <table className="dataset-table">
+          <thead>
+            <tr>
+              {getHeaders().map((header) => (
+                <th key={header}>{header.replace("_", " ").toUpperCase()}</th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.id}>
+                {getHeaders().map((header) => (
+                  <td key={header}>{entry.data[header] || "N/A"}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       {/* Pagination buttons */}
       <div className="pagination">
         <button

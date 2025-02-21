@@ -397,3 +397,92 @@
 .analytics-section {
   margin-bottom: 40px;
 }
+
+
+.dataset-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-container {
+  overflow-x: auto; /* Enables horizontal scrolling */
+  max-width: 100%;
+  border: 1px solid #ddd; /* Optional: adds a border */
+}
+
+.dataset-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dataset-table th, .dataset-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+  white-space: nowrap; /* Prevents text wrapping */
+}
+
+.dataset-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+
+.fetch-fhir-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  background-color: #f7f7f7;
+  padding: 20px;
+}
+
+.fetch-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.fetch-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.dataset-button {
+  padding: 15px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, background-color 0.3s;
+  width: 250px;
+}
+
+.dataset-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-3px);
+}
+
+.dataset-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.status-message {
+  color: green;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 20px;
+  background-color: #e6f7e6;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #a0d6a0;
+}

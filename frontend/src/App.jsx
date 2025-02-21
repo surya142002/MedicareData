@@ -7,6 +7,7 @@ import DatasetsPage from './components/DatasetsPage';
 import AnalyticsPage from './components/AnalyticsPage';
 import UploadDatasetPage from './components/UploadDatasetPage';
 import DeleteDatasetPage from './components/DeleteDatasetPage';
+import FetchFHIRData from "./components/FetchFHIRData";
 import api from './utils/api';
 import { decodeJWT } from './utils/decodeJWT';
 
@@ -98,6 +99,7 @@ const App = () => {
             isLoggedIn ? <DatasetsPage onLogout={handleLogout} /> : <Navigate to="/login" />
           }
         />
+        <Route path="/fetch-fhir-data" element={<ProtectedAdminRoute element={<FetchFHIRData />} />} />
         <Route
           path="/upload"
           element={<ProtectedAdminRoute element={<UploadDatasetPage />} />}

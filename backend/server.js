@@ -9,6 +9,7 @@ import initModels from "./models/initModels.js";
 import userRoutes from "./routes/userRoutes.js";
 import datasetRoutes from "./routes/datasetRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
+import fhirRoutes from "./routes/fhirRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +59,7 @@ sequelize
 app.use("/api/auth", userRoutes);
 app.use("/api/datasets", datasetRoutes);
 app.use("/api/analytics", analyticsRoutes); // Add analytics routes
+app.use("/api/fhir", fhirRoutes);
 
 // ✅ Fix for React Router Refresh Issue
 app.get("*", (req, res) => {

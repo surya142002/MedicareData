@@ -11,7 +11,7 @@ const DatasetsPage = ({ onLogout }) => {
   const navigate = useNavigate();
   const isAdmin = localStorage.getItem('role') === 'admin'; // Check role from localStorage
 
-  // Fetch datasets on component mount
+  // Fetch datasets on component mounth
   useEffect(() => {
     const fetchDatasets = async () => {
       try {
@@ -58,6 +58,9 @@ const DatasetsPage = ({ onLogout }) => {
             </button>
             <button className="admin-button" onClick={() => navigate('/analytics')}>
               Analytics
+            </button>
+            <button className="admin-button" onClick={() => navigate("/fetch-fhir-data")}>
+              Fetch FHIR Data
             </button>
           </>
         )}
