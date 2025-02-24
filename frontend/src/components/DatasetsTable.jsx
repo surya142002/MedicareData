@@ -8,50 +8,53 @@ const DatasetTable = ({ datasetId, datasetName }) => {
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
 
   // Fetch dataset entries from the backend
-  const fetchEntries = async (page = 1, search = "") => {
+  const fetchEntries = async (page = pagination.currentPage, search = searchTerm) => {
     try {
-      // Fetch entries from the API
       const response = await api.get(`/datasets/${datasetId}/entries`, {
         params: { page, limit: 10, searchTerm: search },
       });
+  
       setEntries(response.data.entries);
-      // Update pagination state
       setPagination({
-        currentPage: response.data.currentPage,
+        currentPage: page,
         totalPages: response.data.totalPages,
       });
     } catch (error) {
       console.error("Error fetching dataset entries:", error);
     }
-  };
+  };  
+  
 
   // Reset search bar and fetch entries when datasetId changes
   useEffect(() => {
-    setSearchTerm(""); // Reset the search term
-    fetchEntries(); // Fetch entries for the new dataset
+    setSearchTerm("");
+    fetchEntries(1, ""); // Always start at page 1 when switching datasets
   }, [datasetId]);
 
   // Search bar handler
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
-    fetchEntries(1, value); // Reset to the first page with the search term
-  };
+    fetchEntries(1, value); // 🔹 Ensure searchTerm is sent to backend
+  };  
+  
 
   // Pagination handler
   const handlePageChange = (newPage) => {
-    fetchEntries(newPage, searchTerm); // Fetch new page data
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination((prev) => ({ ...prev, currentPage: newPage }));
+      fetchEntries(newPage, searchTerm);
+    }
   };
 
   // Extract headers dynamically from the dataset entries
   const getHeaders = () => {
     if (entries.length === 0) return [];
-    return Object.keys(entries[0].data);
+    return Object.keys(entries[0]?.data || {});
   };
 
   return (
     <div className="dataset-container">
-      {/* Dataset name */}
       <h2>{datasetName}</h2>
       <input
         type="text"
@@ -60,8 +63,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         onChange={handleSearch}
         className="search-bar"
       />
-      
-      {/* Scrollable table container */}
+
       <div className="table-container">
         <table className="dataset-table">
           <thead>
@@ -83,7 +85,6 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         </table>
       </div>
 
-      {/* Pagination buttons */}
       <div className="pagination">
         <button
           onClick={() => handlePageChange(pagination.currentPage - 1)}
