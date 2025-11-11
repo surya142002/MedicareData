@@ -27,32 +27,32 @@ export const parseDataset = (datasetType, rows) => {
         description: row[1] || "No description available",
       }));
 
-    case "RVU":
-      return rows.map((row) => ({
-        code: row[0],
-        value: row[1] || "N/A",
-        description: row[2] || "No description available",
-      }));
+    // case "RVU":
+    //   return rows.map((row) => ({
+    //     code: row[0],
+    //     value: row[1] || "N/A",
+    //     description: row[2] || "No description available",
+    //   }));
 
-    case "FeeSchedules":
-      return rows.map((row) => ({
-        code: row[0],
-        fee: row[1] || "N/A",
-        description: row[2] || "No description available",
-      }));
+    // case "FeeSchedules":
+    //   return rows.map((row) => ({
+    //     code: row[0],
+    //     fee: row[1] || "N/A",
+    //     description: row[2] || "No description available",
+    //   }));
 
-    case "MUE Edits":
-      return rows.map((row) => ({
-        code: row[0],
-        units: row[1] || "N/A",
-        edits: row[2] || "No description available",
-      }));
+    // case "MUE Edits":
+    //   return rows.map((row) => ({
+    //     code: row[0],
+    //     units: row[1] || "N/A",
+    //     edits: row[2] || "No description available",
+    //   }));
 
-    case "LMRP":
-      return rows.map((row) => ({
-        policyId: row[0],
-        description: row[1] || "No description available",
-      }));
+    // case "LMRP":
+    //   return rows.map((row) => ({
+    //     policyId: row[0],
+    //     description: row[1] || "No description available",
+    //   }));
 
     default:
       throw new Error(`Unsupported dataset type: ${datasetType}`);

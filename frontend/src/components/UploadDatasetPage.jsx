@@ -93,10 +93,10 @@ const UploadDatasetPage = () => {
                         <option value="">Select Type</option>
                         <option value="ICD-10-CM">ICD-10-CM</option>
                         <option value="HCPCS">HCPCS</option>
-                        <option value="RVU">RVU</option>
-                        <option value="FeeSchedules">Fee Schedules</option>
-                        <option value="MUE Edits">MUE Edits</option>
-                        <option value="LMRP">Current LMRP</option>
+                        {/* <option value="RVU">RVU</option> */}
+                        {/* <option value="FeeSchedules">Fee Schedules</option> */}
+                        {/* <option value="MUE Edits">MUE Edits</option> */}
+                        {/* <option value="LMRP">Current LMRP</option> */}
                     </select>
                     <div className="auth-form-file">
                         <label htmlFor="file-input" className="file-input-label">

@@ -30,10 +30,10 @@ export const uploadDataset = async (req, res) => {
     const allowedTypes = [
       "ICD-10-CM",
       "HCPCS",
-      "RVU",
-      "FeeSchedules",
-      "MUE Edits",
-      "LMRP",
+      // "RVU",
+      // "FeeSchedules",
+      // "MUE Edits",
+      // "LMRP",
     ];
     if (!allowedTypes.includes(datasetType)) {
       return res
