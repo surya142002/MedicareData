@@ -10,6 +10,7 @@ import userRoutes from "./routes/userRoutes.js";
 import datasetRoutes from "./routes/datasetRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import fhirRoutes from "./routes/fhirRoutes.js";
+import llmSearchRoutes from "./routes/llmSearchRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -60,6 +61,7 @@ app.use("/api/auth", userRoutes);
 app.use("/api/datasets", datasetRoutes);
 app.use("/api/analytics", analyticsRoutes); // Add analytics routes
 app.use("/api/fhir", fhirRoutes);
+app.use("/api", llmSearchRoutes);
 
 // ✅ Fix for React Router Refresh Issue
 app.get("*", (req, res) => {

@@ -175,7 +175,20 @@ export const deleteDataset = async (req, res) => {
 export const getDatasetEntries = async (req, res) => {
   try {
     const { datasetId } = req.params;
-    const { searchTerm = "", page = 1, limit = 20 } = req.query;
+    const { searchTerm = "", page = 1, limit = 20, mode = "exact" } = req.query;
+
+    console.log("🔥 EXACT ROUTE CALLED WITH:", req.query);
+
+    // NEW: Prevent exact-search from overwriting AI results
+    if (mode === "semantic") {
+      return res.json({
+        entries: [],
+        count: 0,
+        currentPage: 1,
+        totalPages: 1,
+      });
+    }
+
     const offset = (page - 1) * limit;
 
     const dataset = await Datasets.findByPk(datasetId);
@@ -192,10 +205,10 @@ export const getDatasetEntries = async (req, res) => {
         [Op.and]: [Sequelize.literal(`data::text ILIKE '%${searchTerm}%'`)],
       };
 
-      // ✅ Log dataset search
+      // Log dataset search
       await logDatasetUsage(datasetId, "search", searchTerm, req.user.id);
     } else {
-      // ✅ Log dataset view only if there's no search term
+      // Log view only when not searching
       await logUserActivity(
         req.user.id,
         "view_dataset",
@@ -211,7 +224,7 @@ export const getDatasetEntries = async (req, res) => {
       order: [["created_at", "DESC"]],
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       entries: entries.rows,
       count: entries.count,
       currentPage: parseInt(page, 10),

@@ -1,68 +1,73 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "Start PostgreSQL",
-        "type": "shell",
-        "command": "./startup.sh",
-        "problemMatcher": [],
-        "presentation": {
-          "reveal": "always",
-          "panel": "shared",
-          "showReuseMessage": false,
-          "clear": true
-        }
-      },
-      {
-        "label": "Start Backend",
-        "type": "shell",
-        "command": "cd backend && nodemon server.js",
-        "problemMatcher": [],
-        "dependsOn": ["Start PostgreSQL"],
-        "group": "build",
-        "presentation": {
-          "reveal": "always",
-          "panel": "dedicated",
-          "showReuseMessage": false,
-          "clear": true
-        }
-      },
-      {
-        "label": "Start Frontend",
-        "type": "shell",
-        "command": "cd frontend && npm run dev",
-        "problemMatcher": [],
-        "dependsOn": ["Start PostgreSQL"],
-        "group": "build",
-        "presentation": {
-          "reveal": "always",
-          "panel": "dedicated",
-          "showReuseMessage": false,
-          "clear": true
-        }
-      },
-      {
-        "label": "Start All (Backend + Frontend)",
-        "dependsOn": ["Start Backend", "Start Frontend"],
-        "problemMatcher": [],
-        "group": "build",
-        "presentation": {
-          "reveal": "always",
-          "panel": "shared"
-        }
-      },
-      {
-        "label": "Stop All",
-        "type": "shell",
-        "command": "./shutdown.sh",
-        "problemMatcher": [],
-        "group": "none",
-        "presentation": {
-          "reveal": "always",
-          "panel": "shared",
-          "clear": true
-        }
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start PostgreSQL",
+      "type": "shell",
+      "command": "./startup.sh",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
       }
-    ]
-  }
-  
+    },
+    {
+      "label": "Start Backend",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "command": "export $(grep -v '^#' .env | xargs) && nodemon server.js",
+      "problemMatcher": [],
+      "dependsOn": ["Start PostgreSQL"],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      }
+    },
+    {
+      "label": "Start Frontend",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "command": "npm run dev",
+      "problemMatcher": [],
+      "dependsOn": ["Start PostgreSQL"],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      }
+    },
+    {
+      "label": "Start All (Backend + Frontend)",
+      "dependsOn": ["Start Backend", "Start Frontend"],
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Stop All",
+      "type": "shell",
+      "command": "./shutdown.sh",
+      "problemMatcher": [],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    }
+  ]
+}
