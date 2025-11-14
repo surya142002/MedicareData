@@ -5,22 +5,25 @@ const DatasetTable = ({ datasetId, datasetName }) => {
   const [entries, setEntries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // pagination for exact mode
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
   });
 
-  // exact or semantic
   const [mode, setMode] = useState("exact");
 
   // -------------------------
-  // Fetch Exact Search
+  // Load EXACT search
   // -------------------------
   const loadExact = async (page, search) => {
     try {
       const response = await api.get(`/datasets/${datasetId}/entries`, {
-        params: { page, limit: 10, searchTerm: search, mode: "exact" },
+        params: {
+          page,
+          limit: 10,
+          searchTerm: search,
+          mode: "exact",
+        },
       });
 
       setEntries(response.data.entries);
@@ -34,7 +37,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
   };
 
   // -------------------------
-  // Fetch Semantic Search
+  // Load SEMANTIC search
   // -------------------------
   const loadSemantic = async (search) => {
     try {
@@ -44,23 +47,23 @@ const DatasetTable = ({ datasetId, datasetName }) => {
       });
 
       setEntries(response.data.results || []);
-      // no pagination in semantic mode
     } catch (err) {
       console.error("Semantic search error:", err);
     }
   };
 
   // -------------------------
-  // EXACT MODE EFFECT
+  // EFFECT: EXACT MODE
+  // TRIGGER ON searchTerm changes
   // -------------------------
   useEffect(() => {
     if (mode === "exact") {
       loadExact(pagination.currentPage, searchTerm);
     }
-  }, [datasetId, mode, pagination.currentPage]);
+  }, [datasetId, mode, pagination.currentPage, searchTerm]);
 
   // -------------------------
-  // SEMANTIC MODE EFFECT
+  // EFFECT: SEMANTIC MODE
   // -------------------------
   useEffect(() => {
     if (mode === "semantic") {
@@ -74,38 +77,41 @@ const DatasetTable = ({ datasetId, datasetName }) => {
   useEffect(() => {
     setMode("exact");
     setSearchTerm("");
+    setEntries([]);
     setPagination({ currentPage: 1, totalPages: 1 });
   }, [datasetId]);
 
   // -------------------------
-  // Search update
+  // Search handler
   // -------------------------
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+    const val = e.target.value;
+    setSearchTerm(val);
 
-    // Only reset pagination in EXACT mode
     if (mode === "exact") {
-      setPagination((prev) => ({ ...prev, currentPage: 1 }));
+      setPagination((prev) => ({
+        ...prev,
+        currentPage: 1,
+      }));
     }
   };
 
   // -------------------------
-  // Pagination (exact mode only)
+  // Pagination (EXACT only)
   // -------------------------
   const handlePageChange = (newPage) => {
     if (mode !== "exact") return;
-
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setPagination((prev) => ({ ...prev, currentPage: newPage }));
     }
   };
 
   // -------------------------
-  // Dynamic headers
+  // Table headers
   // -------------------------
   const getHeaders = () => {
     if (entries.length === 0) return [];
-    return Object.keys(entries[0]?.data || {});
+    return Object.keys(entries[0].data || {});
   };
 
   return (
@@ -134,14 +140,13 @@ const DatasetTable = ({ datasetId, datasetName }) => {
             checked={mode === "semantic"}
             onChange={() => {
               setMode("semantic");
-              // IMPORTANT: do NOT reset pagination here
             }}
           />
           {" "}AI Search
         </label>
       </div>
 
-      {/* Search Input */}
+      {/* Search Bar */}
       <input
         type="text"
         placeholder={`Search in ${datasetName}`}
@@ -163,10 +168,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
           <tbody>
             {entries.length === 0 ? (
               <tr>
-                <td
-                  colSpan={getHeaders().length}
-                  style={{ textAlign: "center" }}
-                >
+                <td colSpan={getHeaders().length} style={{ textAlign: "center" }}>
                   No results found.
                 </td>
               </tr>
@@ -183,7 +185,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         </table>
       </div>
 
-      {/* Pagination — exact only */}
+      {/* Pagination */}
       {mode === "exact" && (
         <div className="pagination">
           <button
