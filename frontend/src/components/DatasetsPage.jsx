@@ -1,75 +1,69 @@
-import React from "react";
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
-import DatasetTable from './DatasetsTable';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
+import DatasetTable from "./DatasetsTable";
 
 const DatasetsPage = ({ onLogout }) => {
-  // State variables
   const [datasets, setDatasets] = useState([]);
   const [selectedDataset, setSelectedDataset] = useState(null);
-  const navigate = useNavigate();
-  const isAdmin = localStorage.getItem('role') === 'admin'; // Check role from localStorage
 
-  // Fetch datasets on component mounth
+  const navigate = useNavigate();
+  const isAdmin = localStorage.getItem("role") === "admin";
+
+  // Fetch datasets on mount
   useEffect(() => {
     const fetchDatasets = async () => {
       try {
-        // Fetch datasets from the API
-        const response = await api.get('/datasets');
-        console.log('Fetched datasets:', response.data);
+        const response = await api.get("/datasets");
+        console.log("Fetched datasets:", response.data);
         setDatasets(response.data);
       } catch (error) {
-        console.error('Error fetching datasets:', error);
-        if (error.response && error.response.status === 401) {
-          onLogout(); // Log out if unauthorized
+        console.error("Error fetching datasets:", error);
+        if (error.response?.status === 401) {
+          onLogout();
         }
       }
     };
 
-    // Call the fetchDatasets function
     fetchDatasets();
   }, [onLogout]);
 
-
-  // Handle dataset button click
+  // Dataset selection
   const handleDatasetClick = (dataset) => {
     setSelectedDataset(dataset);
   };
 
-  // Handle logout button click
+  // Logout
   const handleLogout = () => {
-    onLogout(); // Trigger logout callback
-    navigate('/login', { replace: true }); // Ensure immediate redirection
+    onLogout();
+    navigate("/login", { replace: true });
   };
 
-  // Render the component
   return (
     <div className="datasets-page">
-      {/* Header with buttons */}
+      {/* Header buttons */}
       <div className="header-buttons">
         {isAdmin && (
           <>
-            <button className="admin-button" onClick={() => navigate('/upload')}>
+            <button className="admin-button" onClick={() => navigate("/upload")}>
               Upload Dataset
             </button>
-            <button className="admin-button" onClick={() => navigate('/delete')}>
+            <button className="admin-button" onClick={() => navigate("/delete")}>
               Delete Dataset
             </button>
-            <button className="admin-button" onClick={() => navigate('/analytics')}>
+            <button className="admin-button" onClick={() => navigate("/analytics")}>
               Analytics
-            </button>
-            <button className="admin-button" onClick={() => navigate("/fetch-fhir-data")}>
-              Fetch FHIR Data
             </button>
           </>
         )}
+
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
       </div>
 
-      {/* Datasets list */}
+      {/* Dataset list */}
       <div className="header">
         <h1 className="header-title">Available Datasets</h1>
       </div>
@@ -93,11 +87,18 @@ const DatasetsPage = ({ onLogout }) => {
       {/* Dataset table */}
       {selectedDataset && (
         <div className="dataset-table-container">
-          <DatasetTable datasetId={selectedDataset.id} datasetName={selectedDataset.name} />
+          <DatasetTable
+            datasetId={selectedDataset.id}
+            datasetName={selectedDataset.name}
+          />
         </div>
       )}
     </div>
   );
+};
+
+DatasetsPage.propTypes = {
+  onLogout: PropTypes.func.isRequired,
 };
 
 export default DatasetsPage;

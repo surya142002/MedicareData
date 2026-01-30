@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import api from "../utils/api";
 
 const DatasetTable = ({ datasetId, datasetName }) => {
   const [entries, setEntries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [semanticResults, setSemanticResults] = useState([]);
 
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -11,16 +13,14 @@ const DatasetTable = ({ datasetId, datasetName }) => {
   });
 
   const [mode, setMode] = useState("exact");
+  const pageSize = 10;
 
-  // -------------------------
-  // Load EXACT search
-  // -------------------------
   const loadExact = async (page, search) => {
     try {
       const response = await api.get(`/datasets/${datasetId}/entries`, {
         params: {
           page,
-          limit: 10,
+          limit: pageSize,
           searchTerm: search,
           mode: "exact",
         },
@@ -36,9 +36,6 @@ const DatasetTable = ({ datasetId, datasetName }) => {
     }
   };
 
-  // -------------------------
-  // Load SEMANTIC search
-  // -------------------------
   const loadSemantic = async (search) => {
     try {
       const response = await api.post(`/llm-search`, {
@@ -46,69 +43,56 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         query: search,
       });
 
-      setEntries(response.data.results || []);
+      const results = response.data.results || [];
+      const totalPages = Math.max(1, Math.ceil(results.length / pageSize));
+      setSemanticResults(results);
+      setPagination({ currentPage: 1, totalPages });
+      setEntries(results.slice(0, pageSize));
     } catch (err) {
       console.error("Semantic search error:", err);
     }
   };
 
-  // -------------------------
-  // EFFECT: EXACT MODE
-  // TRIGGER ON searchTerm changes
-  // -------------------------
   useEffect(() => {
     if (mode === "exact") {
       loadExact(pagination.currentPage, searchTerm);
     }
   }, [datasetId, mode, pagination.currentPage, searchTerm]);
 
-  // -------------------------
-  // EFFECT: SEMANTIC MODE
-  // -------------------------
   useEffect(() => {
     if (mode === "semantic") {
       loadSemantic(searchTerm);
     }
   }, [datasetId, mode, searchTerm]);
 
-  // -------------------------
-  // Reset when switching dataset
-  // -------------------------
   useEffect(() => {
     setMode("exact");
     setSearchTerm("");
     setEntries([]);
+    setSemanticResults([]);
     setPagination({ currentPage: 1, totalPages: 1 });
   }, [datasetId]);
 
-  // -------------------------
-  // Search handler
-  // -------------------------
   const handleSearch = (e) => {
     const val = e.target.value;
     setSearchTerm(val);
 
-    if (mode === "exact") {
-      setPagination((prev) => ({
-        ...prev,
-        currentPage: 1,
-      }));
-    }
+    setPagination((prev) => ({
+      ...prev,
+      currentPage: 1,
+    }));
   };
 
-  // -------------------------
-  // Pagination (EXACT only)
-  // -------------------------
   const handlePageChange = (newPage) => {
-    if (mode !== "exact") return;
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setPagination((prev) => ({ ...prev, currentPage: newPage }));
+      if (mode === "semantic") {
+        const start = (newPage - 1) * pageSize;
+        setEntries(semanticResults.slice(start, start + pageSize));
+      }
     }
   };
 
-  // -------------------------
-  // Table headers
-  // -------------------------
   const getHeaders = () => {
     if (entries.length === 0) return [];
     return Object.keys(entries[0].data || {});
@@ -118,7 +102,6 @@ const DatasetTable = ({ datasetId, datasetName }) => {
     <div className="dataset-container">
       <h2>{datasetName}</h2>
 
-      {/* Mode Toggle */}
       <div style={{ marginBottom: "10px", textAlign: "center" }}>
         <label>
           <input
@@ -142,11 +125,10 @@ const DatasetTable = ({ datasetId, datasetName }) => {
               setMode("semantic");
             }}
           />
-          {" "}AI Search
+          {" "}Semantic Search
         </label>
       </div>
 
-      {/* Search Bar */}
       <input
         type="text"
         placeholder={`Search in ${datasetName}`}
@@ -155,7 +137,6 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         className="search-bar"
       />
 
-      {/* Table */}
       <div className="table-container">
         <table className="dataset-table">
           <thead>
@@ -168,7 +149,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
           <tbody>
             {entries.length === 0 ? (
               <tr>
-                <td colSpan={getHeaders().length} style={{ textAlign: "center" }}>
+                <td colSpan={Math.max(getHeaders().length, 1)} style={{ textAlign: "center" }}>
                   No results found.
                 </td>
               </tr>
@@ -176,7 +157,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
               entries.map((entry) => (
                 <tr key={entry.id}>
                   {getHeaders().map((header) => (
-                    <td key={header}>{entry.data[header] || "N/A"}</td>
+                    <td key={header}>{entry.data?.[header] ?? "N/A"}</td>
                   ))}
                 </tr>
               ))
@@ -185,8 +166,7 @@ const DatasetTable = ({ datasetId, datasetName }) => {
         </table>
       </div>
 
-      {/* Pagination */}
-      {mode === "exact" && (
+      {(mode === "exact" || mode === "semantic") && (
         <div className="pagination">
           <button
             onClick={() => handlePageChange(pagination.currentPage - 1)}
@@ -209,6 +189,11 @@ const DatasetTable = ({ datasetId, datasetName }) => {
       )}
     </div>
   );
+};
+
+DatasetTable.propTypes = {
+  datasetId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  datasetName: PropTypes.string.isRequired,
 };
 
 export default DatasetTable;

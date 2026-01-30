@@ -1,8 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../utils/api";
 import { decodeJWT } from "../utils/decodeJWT";
-import React from "react";
 
 const LoginForm = ({ setIsLoggedIn }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -11,7 +11,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -35,7 +35,9 @@ const LoginForm = ({ setIsLoggedIn }) => {
     <div className="auth-page">
       <div className="auth-form-container">
         <h1 className="auth-form-title">Login</h1>
+
         {error && <p className="auth-form-error">{error}</p>}
+
         <form onSubmit={handleSubmit} className="auth-form">
           <label htmlFor="email" className="auth-form-label">
             Email:
@@ -49,6 +51,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
             required
             className="auth-form-input"
           />
+
           <label htmlFor="password" className="auth-form-label">
             Password:
           </label>
@@ -61,9 +64,11 @@ const LoginForm = ({ setIsLoggedIn }) => {
             required
             className="auth-form-input"
           />
+
           <button type="submit" className="auth-form-button">
             Login
           </button>
+
           <p className="auth-form-link">
             Don't have an account?{" "}
             <Link to="/register" className="link">
@@ -75,6 +80,10 @@ const LoginForm = ({ setIsLoggedIn }) => {
       </div>
     </div>
   );
+};
+
+LoginForm.propTypes = {
+  setIsLoggedIn: PropTypes.func.isRequired,
 };
 
 export default LoginForm;
