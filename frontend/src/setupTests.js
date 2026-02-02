@@ -7,7 +7,7 @@ import "@testing-library/jest-dom";
 // Environment variables for testing
 globalThis.importMeta = {
   env: {
-    VITE_API_URL: "http://localhost:5452/api",
+    VITE_API_URL: "http://localhost:3000/api",
   },
 };
 

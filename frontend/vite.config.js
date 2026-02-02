@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173, // Default Vite port
     proxy: {
       "/api": {
-        target: "http://localhost:5452", // Local backend URL
+        target: "http://localhost:3000", // Local backend URL
         changeOrigin: true,
       },
     },
